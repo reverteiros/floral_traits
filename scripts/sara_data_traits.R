@@ -18,9 +18,9 @@ traits$sex <- droplevels(traits$sex)
 traits$ITlength_mm <- as.numeric(as.character(traits$ITlength_mm))
 
 ## Create a table grouping per bee and sex
-group <- group_by(traits, bee, sex)
+group <- group_by(traits, bee)
 ## Calculate mean IT per each previous group
-nITperbee <- summarize(group, measured=n())
+nITperbee <- summarize(group, IT_mm=mean(ITlength_mm))
 
 
 ######### Read male bee dataset
@@ -36,31 +36,28 @@ male$bee_sex[which(male$bee_sex=="M")]<-"male"
 male$bee_sex[which(male$bee_sex=="F")]<-"female"
 male$sex <- male$bee_sex
 
-#so the deal here is that there are multiple "right"values per bee, so this join results in for each unique ID in the male bee dataset, 0-[# measured specimens] matches on the right. I think there might be a way get merge to default to just the first match, but I used your "meanITpergroup" d.f. instead
-
-#maleIT<- merge(male, traits, by=("bee"), all.x=TRUE, all.y=F, sort=FALSE)
 
 
 ## database of IT  separate by bee and sex
 group <- group_by(traits, bee, sex)
-nITperbee <- summarize(group, measured=n())
+nITperbee2 <- summarize(group, measured=n())
 
 ## database of michael separate by bee and sex
 group <- group_by(male, bee, sex)
 michaeldata <- summarize(group, abundance=n())
-maleIT <- michaeldata %>% left_join(nITperbee, by=(c("bee","sex")))
+maleIT <- michaeldata %>% left_join(nITperbee2, by=(c("bee","sex")))
 
 sum(table(maleIT$measured))
 
 ## mow the same but not separing by sex
 ## database of traits. separate by bee and sex
 group <- group_by(traits, bee)
-nITperbee <- summarize(group, measured=n())
+nITperbee3 <- summarize(group, measured=n())
 
 ## database of michael separate by bee and sex
 group <- group_by(male, bee)
 michaeldata <- summarize(group, abundance=n())
-maleIT <- michaeldata %>% left_join(nITperbee, by=(c("bee")))
+maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
 
 
@@ -82,45 +79,46 @@ flowersmeasured <- summarize(group, measured=n())
 
 group <- group_by(male, genus_species)
 michaeldata <- summarize(group, abundance=n())
-whichflowers <- michaeldata %>% left_join(flowersmeasured, by=(c("genus_species")))
+michaelflowers <- michaeldata %>% left_join(flowersmeasured, by=(c("genus_species")))
 
-whichflowers<-whichflowers[whichflowers$measured!="NA",]
+#michaelflowers<-michaelflowers[michaelflowers$measured!="NA",]
 
 #### How many species are in the dataset?
-sum(table(whichflowers$abundance)) # 113
+sum(table(michaelflowers$abundance)) # 113
 ### How many species do we have floral traits data?
-sum(table(whichflowers$measured))  # 44
+sum(table(michaelflowers$measured))  # 44
 
 
 sum(whichflowers$abundance[complete.cases(whichflowers$abundance)])
-whichflowers$measured
-whichflowers$genus_species
 
 
 # Which species we lack data, and how many visits do they have
 flowersnodata <- michaeldata %>% anti_join(flowersmeasured, by=(c("genus_species")))
-
-hist(flowersnodata$abundance)
-table(flowersnodata$abundance)
-sort(flowersnodata)
-
+# from which species do we have more than 80 visits and worth measuring
 dplyr::filter(flowersnodata, abundance > 80)
 
+# 
+# #### bee head size
+# names(traits)
+# ## There are NULLs that promote error. Remove them
+# traits<-traits[traits$head_width!="NULL",]
+# ## Variable IT distance is still a factor. Convert to numeric
+# traits$head_width <- as.numeric(as.character(traits$head_width))
+# 
+# ## Create a table grouping per bee
+# group <- group_by(traits, bee)
+# ## Calculate mean IT per each previous group
+# nheadwidthperbee <- summarize(group, measured=n())
+# 
+# group <- group_by(male, bee)
+# michaeldata <- summarize(group, abundance=n())
+# maleIT <- michaeldata %>% left_join(nheadwidthperbee, by=(c("bee")))
 
-#### bee head size
-names(traits)
-## There are NULLs that promote error. Remove them
-traits<-traits[traits$head_width!="NULL",]
-## Variable IT distance is still a factor. Convert to numeric
-traits$head_width <- as.numeric(as.character(traits$head_width))
 
-## Create a table grouping per bee
-group <- group_by(traits, bee)
-## Calculate mean IT per each previous group
-nheadwidthperbee <- summarize(group, measured=n())
+################ create a final dataset for graphs
+# add IT
+generaldata <- male %>% left_join(nITperbee, by=(c("bee")))
 
-group <- group_by(male, bee)
-michaeldata <- summarize(group, abundance=n())
-maleIT <- michaeldata %>% left_join(nheadwidthperbee, by=(c("bee")))
+# add flower traits
+generaldata <- generaldata %>% left_join(floraltraits, by=(c("genus_species")))
 
-maleIT$measured
