@@ -76,7 +76,7 @@ subsetgeneraldata <- generaldata[which(generaldata$depth != "NA"),]
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
 hist(subsetgeneraldata$depth, xlab="Flower depth (mm)",main="")
 hist(subsetgeneraldata$width, xlab="Flower width (mm)",main="")
-plot(subsetgeneraldata$tongue_length.tongue~subsetgeneraldata$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
+plot(subsetgeneraldata$tongue_length.tongue~subsetgeneraldata$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)", xlim=c(0,33), ylim=c(0,32))
 plot(subsetgeneraldata$IT_mm~subsetgeneraldata$width,ylab="IT distance (mm)", xlab="Flower width (mm)")
 
 ## divide in flowers with proboscis longer  than flowers and shorter
@@ -104,11 +104,13 @@ difff <- dplyr::filter(proboscisshorterthanflowers, difference < 5)
 hist(difff$difference, xlab="Flower depth - tongue length (mm)",main="")
 
 # From these data, separate the bees that are larger than flowers than the ones smaller
+# given that heads were a bit bigger as I recall than IT, might want to move this a bit. 
 
-beeslargerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm > width)
-beessmallerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm < width)
+beeslargerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm/0.75 > width)
+beessmallerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm/0.75 < width)
 
 hist(beeslargerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
+
 hist(beessmallerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
 
 length(beeslargerthanflowers$difference)
@@ -144,10 +146,10 @@ beeslargerthanflowers %>%
 
 beeslargerthanflowers %>%
   ggplot(aes(x=depth, difference))+
-  geom_point(aes(color=genus_species))+
+  geom_point(aes(color=plant_gs))+
   theme_classic()
 
-table(droplevels(as.factor(beeslargerthanflowers$genus_species)))
+table(droplevels(as.factor(beeslargerthanflowers$plant_gs)))
 
 flowers <- floraltraits %>% semi_join(beeslargerthanflowers, by=(c("genus_species")))
 
@@ -158,6 +160,6 @@ hist(shortflowers$difference)
 
 shortflowers %>%
   ggplot(aes(x=depth, tongue_length.tongue))+
-  geom_point(aes(color=genus_species))+
+  geom_point(aes(color=plant_gs))+
   theme_classic()
 
