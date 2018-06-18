@@ -1,55 +1,6 @@
 
-require(devtools)
-library(BeeIT)
-
 source("scripts/script_traits.R")
-
-## we need family data
-generaldata$bee_family <- generaldata$bee_genus
-generaldata$bee_family <- as.character(generaldata$bee_family)
-
-generaldata$bee_family[generaldata$bee_family=="Xylocopa"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Triepeolus"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Stelis"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Sphecodes"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="sand wasp"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Ptilothrix"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Pseudoanthidium"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Osmia"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Nomada"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Melissodes"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Megachile"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Lithurgus"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Lasioglossum"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Hoplitis"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Heriades"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Halictus"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Hylaeus"]<-"Colletidae"
-generaldata$bee_family[generaldata$bee_family=="Dufouria"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Coelioxys"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Ceratina"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Calliopsis"]<-"Andrenidae"
-generaldata$bee_family[generaldata$bee_family=="Bombus"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Augochloropsis"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Augochlorella"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Augochlora"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Anthophora"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Agapostemon"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Anacrabro"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Andrena"]<-"Andrenidae"
-generaldata$bee_family[generaldata$bee_family=="Anthidiellum"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Anthidium"]<-"Megachilidae"
-
-# Remove other bugs
-generaldata<-generaldata[-which(generaldata$bee_family == "Others"),]
-table(generaldata$bee_family)
-
-# Calculate bee proboscis length and body size
-Out <- ITconverter(IT = generaldata$IT_mm, family = generaldata$bee_family)
-
-generaldata$body_mass <- Out$body_mass
-generaldata$tongue_length.tongue <- Out$tongue_length.tongue
-
+library(ggplot2)
 
 ## Plots only for the plants from which we have data on traits
 
@@ -101,76 +52,43 @@ plot(beeslargerthanflowers$tongue_length.tongue~beeslargerthanflowers$depth,ylab
 plot(beessmallerthanflowers$IT_mm~beessmallerthanflowers$width,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
 
 
-# from which families are the flowers where the difference between proboscis and nectary is greater
+# Plot the difference between corolla depth and tongue length with these two
 
-flowerfamilydifference <- beeslargerthanflowers %>% group_by(plant_family) %>% summarise(mean=mean(difference),sd=sd(difference),interactions=n())
+plot(beeslargerthanflowers$difference~beeslargerthanflowers$depth)
+plot(beeslargerthanflowers$difference~beeslargerthanflowers$tongue_length.tongue)
 
-plotTop <- max(flowerfamilydifference$mean+flowerfamilydifference$sd)
-barCenters <- barplot(flowerfamilydifference$mean, col="blue", las=1, ylim=c(0,plotTop))
-text(x = barCenters, y = par("usr")[3] - 1, srt = 45,adj = 1, labels = flowerfamilydifference$plant_family, xpd = TRUE)
-segments(barCenters, flowerfamilydifference$mean-flowerfamilydifference$sd, barCenters, flowerfamilydifference$mean+flowerfamilydifference$sd, lwd=2)
+# Show the plant family in the plots
 
-# from which families are the pollinators where the difference between proboscis and nectary is greater
+beeslargerthanflowers %>%
+  ggplot(aes(x=tongue_length.tongue, difference))+
+  geom_jitter(aes(color=bee_family),alpha=0.1, height=0.1)+
+  theme_classic()
 
-beefamilydifference <- beeslargerthanflowers %>% group_by(bee_family) %>% summarise(mean=mean(difference),sd=sd(difference),interactions=n())
+beeslargerthanflowers %>%
+  ggplot(aes(x=tongue_length.tongue, difference))+
+  geom_jitter(aes(color=plant_family),alpha=0.1, height=0.1)+
+  theme_classic()
 
-plotTop <- max(beefamilydifference$mean+beefamilydifference$sd)
-barCenters <- barplot(beefamilydifference$mean, col="blue", las=1, ylim=c(0,plotTop))
-text(x = barCenters, y = par("usr")[3] - 1, srt = 45,
-     adj = 1, labels = beefamilydifference$bee_family, xpd = TRUE)
-segments(barCenters, beefamilydifference$mean-beefamilydifference$sd, barCenters, beefamilydifference$mean+beefamilydifference$sd, lwd=2)
+beeslargerthanflowers %>%
+  ggplot(aes(x=tongue_length.tongue, difference))+
+  geom_jitter(aes(color=plant_genus.y),alpha=0.1, height=0.1)+
+  theme_classic()
+
+beeslargerthanflowers %>%
+  ggplot(aes(x=depth, difference))+
+  geom_point(aes(color=genus_species))+
+  theme_classic()
+
+table(droplevels(as.factor(beeslargerthanflowers$genus_species)))
+
+flowers <- floraltraits %>% semi_join(beeslargerthanflowers, by=(c("genus_species")))
 
 
-####################################
-# Wait!! open flowers are assigned a flower width of 0. Not realistic. Let's change
-# it to the highest IT distance as a test
-###### no worry, because they never enter the dataset since I am subsetting
-# by bees with probiscis longer than tube and with tube of 0 all the bees are.
-# 
-# test <- generaldata[which(generaldata$depth != "NA"),]
-# 
-# test$width[which(test$width=="0")]<-"7"
-# test$width <- as.numeric(as.character(test$width))
-# 
-# hist(test$width,xlab="Flower width (mm)",main="")
-# hist(test$tongue_length.tongue, xlab="Tongue length (mm)",main="")
-# hist(test$depth, xlab="Flower depth (mm)",main="")
-# plot(test$tongue_length.tongue~test$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
-# plot(test$IT_mm~test$width,ylab="IT distance (mm)", xlab="Flower width (mm)")
-# 
-# proboscislongerthanflowers <- dplyr::filter(test, tongue_length.tongue > depth)
-# proboscisshorterthanflowers <- dplyr::filter(test, tongue_length.tongue < depth)
-# 
-# plot(proboscislongerthanflowers$tongue_length.tongue~proboscislongerthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
-# plot(proboscislongerthanflowers$IT_mm~proboscislongerthanflowers$width,ylab="IT distance (mm)", xlab="Flower width (mm)")
-# 
-# plot(proboscisshorterthanflowers$tongue_length.tongue~proboscisshorterthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)",xlim=c(0,32),ylim=c(0,15))
-# plot(proboscisshorterthanflowers$IT_mm~proboscisshorterthanflowers$width,ylab="IT distance (mm)", xlab="Flower width (mm)",xlim=c(0,7),ylim=c(0,7))
-# 
-# # Calculate the difference between proboscis length and flower depth for bees
-# # that have shorter proboscis than the flowers they visit, histogram
-# 
-# proboscisshorterthanflowers$difference <- proboscisshorterthanflowers$depth-proboscisshorterthanflowers$tongue_length.tongue
-# 
-# hist(proboscisshorterthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
-# 
-# # we barely see anything, restrict to 5mm difference
-# 
-# difff <- dplyr::filter(proboscisshorterthanflowers, difference < 5)
-# 
-# hist(difff$difference, xlab="Flower depth - tongue length (mm)",main="")
-# 
-# # From these data, separate the bees that are larger than flowers than the ones smaller
-# 
-# beeslargerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm > width)
-# beessmallerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm < width)
-# 
-# hist(beeslargerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
-# hist(beessmallerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
-# 
-# length(beeslargerthanflowers$difference)
-# length(beessmallerthanflowers$difference)
-# 
-# plot(beeslargerthanflowers$tongue_length.tongue~beeslargerthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
-# 
-# plot(beessmallerthanflowers$IT_mm~beessmallerthanflowers$width) 
+shortflowers <- dplyr::filter(beeslargerthanflowers, difference < 5)
+
+hist(shortflowers$difference)
+
+shortflowers %>%
+  ggplot(aes(x=depth, tongue_length.tongue))+
+  geom_point(aes(color=genus_species))+
+  theme_classic()
