@@ -3,49 +3,66 @@ require(devtools)
 library(BeeIT)
 
 source("scripts/script_traits.R")
+# Error in eval(ei, envir) : object 'whichflowers' not found
 
 ## we need family data
-generaldata$bee_family <- generaldata$bee_genus
-generaldata$bee_family <- as.character(generaldata$bee_family)
 
-generaldata$bee_family[generaldata$bee_family=="Xylocopa"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Triepeolus"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Stelis"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Sphecodes"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="sand wasp"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Ptilothrix"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Pseudoanthidium"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Osmia"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Nomada"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Melissodes"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Megachile"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Lithurgus"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Lasioglossum"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Hoplitis"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Heriades"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Halictus"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Hylaeus"]<-"Colletidae"
-generaldata$bee_family[generaldata$bee_family=="Dufouria"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Coelioxys"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Ceratina"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Calliopsis"]<-"Andrenidae"
-generaldata$bee_family[generaldata$bee_family=="Bombus"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Augochloropsis"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Augochlorella"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Augochlora"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Anthophora"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Agapostemon"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Anacrabro"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Andrena"]<-"Andrenidae"
-generaldata$bee_family[generaldata$bee_family=="Anthidiellum"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Anthidium"]<-"Megachilidae"
+#### this seems sketchy to me for a number of reasons... one is that I don't see why pseudoanthidium wouldn't be megachilidae ro Dufouria not Halictidae...
+#### the bigger thing is that hard coding this just seems dangerous, clunky, hard to replicate and clean and fix.
+
+#here's a table with almost every species we could imagine and their traits, as well as phylogenetic info like family. We need to update this table a bit and also there will be species complexes to do manually as below, I just merged this in script_traits.R
+
+
+# then merge the family column from there with the data
+#table generaldata not made with source command. Ok, I just figured it out. 
+
+
+# generaldata$bee_family <- generaldata$bee_genus
+# generaldata$bee_family <- as.character(generaldata$bee_family)
+# 
+# generaldata$bee_family[generaldata$bee_family=="Xylocopa"]<-"Apidae"
+generaldata$bee_family[generaldata$bee_genus=="Triepeolus"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Stelis"]<-"Megachilidae"
+# generaldata$bee_family[generaldata$bee_family=="Sphecodes"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="sand wasp"]<-"Others"
+# generaldata$bee_family[generaldata$bee_family=="Ptilothrix"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Pseudoanthidium"]<-"Others"
+# generaldata$bee_family[generaldata$bee_family=="Osmia"]<-"Megachilidae"
+generaldata$bee_family[generaldata$bee_genus=="Nomada"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Melissodes"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Megachile"]<-"Megachilidae"
+# generaldata$bee_family[generaldata$bee_family=="Lithurgus"]<-"Megachilidae"
+generaldata$bee_family[generaldata$bee_genus=="Lasioglossum"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="Hoplitis"]<-"Megachilidae"
+# generaldata$bee_family[generaldata$bee_family=="Heriades"]<-"Megachilidae"
+# generaldata$bee_family[generaldata$bee_family=="Halictus"]<-"Halictidae"
+generaldata$bee_family[generaldata$bee_genus=="Hylaeus"]<-"Colletidae"
+generaldata$bee_family[generaldata$bee_genus=="Dufouria"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="Coelioxys"]<-"Megachilidae"
+generaldata$bee_family[generaldata$bee_genus=="Ceratina"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Calliopsis"]<-"Andrenidae"
+# generaldata$bee_family[generaldata$bee_family=="Bombus"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Augochloropsis"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="Augochlorella"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="Augochlora"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="Anthophora"]<-"Apidae"
+# generaldata$bee_family[generaldata$bee_family=="Agapostemon"]<-"Halictidae"
+# generaldata$bee_family[generaldata$bee_family=="Anacrabro"]<-"Others"
+# generaldata$bee_family[generaldata$bee_family=="Andrena"]<-"Andrenidae"
+# generaldata$bee_family[generaldata$bee_family=="Anthidiellum"]<-"Megachilidae"
+# generaldata$bee_family[generaldata$bee_family=="Anthidium"]<-"Megachilidae"
 
 # Remove other bugs
-generaldata<-generaldata[-which(generaldata$bee_family == "Others"),]
+#instead, use basicID column
+# generaldata<-generaldata %>% filter(basicID=="bee")
+
+
+#I think all bees have families now
+generaldata[is.na(generaldata$bee_family),]
 table(generaldata$bee_family)
 
 # Calculate bee proboscis length and body size
-Out <- ITconverter(IT = generaldata$IT_mm, family = generaldata$bee_family)
+Out <- ITconverter(IT = generaldata$IT_mm, family = as.character(generaldata$bee_family))
 
 generaldata$body_mass <- Out$body_mass
 generaldata$tongue_length.tongue <- Out$tongue_length.tongue
@@ -174,3 +191,4 @@ segments(barCenters, beefamilydifference$mean-beefamilydifference$sd, barCenters
 # plot(beeslargerthanflowers$tongue_length.tongue~beeslargerthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
 # 
 # plot(beessmallerthanflowers$IT_mm~beessmallerthanflowers$width) 
+

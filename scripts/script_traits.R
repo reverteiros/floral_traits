@@ -37,17 +37,21 @@ male$bee_sex[which(male$bee_sex=="F")]<-"female"
 male$sex <- male$bee_sex
 
 
+### could get some matches. need to clean up traits table a lot
+#nymphaearum=oceanicum
+#hichensi=weemsi
+#most melissodes spp. might have incorrect gender right now (e.g. disponsa instead of the correct disponsus)
 
 ## database of IT  separate by bee and sex
 group <- group_by(traits, bee, sex)
 nITperbee2 <- summarize(group, measured=n())
 
 ## database of michael separate by bee and sex
-group <- group_by(male, bee, sex)
+group <- group_by(male, bee, bee_sex)
 michaeldata <- summarize(group, abundance=n())
-maleIT <- michaeldata %>% left_join(nITperbee2, by=(c("bee","sex")))
+maleIT <- michaeldata %>%rename(sex=bee_sex) %>%  left_join(nITperbee2, by=(c("bee","sex")))
 
-sum(table(maleIT$measured))
+sum(table(maleIT$measured)) #147
 
 ## mow the same but not separing by sex
 ## database of traits. separate by bee and sex
@@ -62,9 +66,9 @@ maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
 
 #### How many species are in the dataset?
-sum(table(maleIT$abundance)) # 166
+sum(table(maleIT$abundance)) # 164
 ### How many species do we have IT data?
-sum(table(maleIT$measured))  # 123
+sum(table(maleIT$measured))  # 122
 
 
 
@@ -122,3 +126,10 @@ generaldata <- male %>% left_join(nITperbee, by=(c("bee")))
 # add flower traits
 generaldata <- generaldata %>% left_join(floraltraits, by=(c("genus_species")))
 
+#drop some yucky columns
+generaldata<-generaldata %>% select (-c("sex","plant_code.x", "plant_species.x", "plant_genus.x", "plant_code.y", "plant_genus.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
+
+### add bee families
+# traittab<-read.csv("data/wlab_db_5-31-18_3-21 PM_species_traits.csv")
+# withfam<-left_join(generaldata, traittab %>% select(genus, species, Family), by=c("bee_genus"="genus","bee_species"="species" ))
+# 
