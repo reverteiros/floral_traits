@@ -26,6 +26,7 @@ nITperbee <- summarize(group, IT_mm=mean(ITlength_mm))
 
 ######### Read male bee dataset
 male<-read.csv("data/2016_male_bee_dataset.csv")
+#### since we are not separing by sex, is this necessary???
 ## Clean sex data. There are many classes
 male<-male[-which(male$bee_sex == "Unidentified"|male$bee_sex == ""),]
 male$bee_sex[which(male$bee_sex=="m")]<-"M"
@@ -65,12 +66,15 @@ michaeldata <- summarize(group, abundance=n())
 maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
 
-
 #### How many species are in the dataset?
 sum(table(maleIT$abundance)) # 164
 ### How many species do we have IT data?
 sum(table(maleIT$measured))  # 122
 
+
+plot(maleIT$abundance~maleIT$measured,ylim=c(0,10),xlim=c(0,4))
+
+42*5+11*4+9*3+8*2+12
 
 
 ############# Read floral traits database
@@ -133,7 +137,7 @@ generaldata <- male %>% left_join(nITperbee, by=(c("bee")))
 # add flower traits
 generaldata <- generaldata %>% left_join(floraltraits, by=(c("genus_species")))
 
-<<<<<<< HEAD
+
 
 
 ## we need family data
@@ -172,6 +176,8 @@ generaldata$bee_family[generaldata$bee_family=="Andrena"]<-"Andrenidae"
 generaldata$bee_family[generaldata$bee_family=="Anthidiellum"]<-"Megachilidae"
 generaldata$bee_family[generaldata$bee_family=="Anthidium"]<-"Megachilidae"
 
+table(generaldata$bee_family)
+
 # Remove other bugs
 generaldata<-generaldata[-which(generaldata$bee_family == "Others"),]
 
@@ -181,7 +187,7 @@ Out <- ITconverter(IT = generaldata$IT_mm, family = generaldata$bee_family)
 generaldata$body_mass <- Out$body_mass
 generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 
-=======
+
 #drop some yucky columns
 generaldata<-generaldata %>% select (-c("sex","plant_code.x", "plant_species.x", "plant_genus.x", "plant_code.y", "plant_genus.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
 
@@ -189,4 +195,3 @@ generaldata<-generaldata %>% select (-c("sex","plant_code.x", "plant_species.x",
 # traittab<-read.csv("data/wlab_db_5-31-18_3-21 PM_species_traits.csv")
 # withfam<-left_join(generaldata, traittab %>% select(genus, species, Family), by=c("bee_genus"="genus","bee_species"="species" ))
 # 
->>>>>>> 4f97bd3c7ed7d9267348170abffc47538c9533cb
