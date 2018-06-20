@@ -18,7 +18,7 @@ traits$sex <- droplevels(traits$sex)
 ## Variable IT distance is still a factor. Convert to numeric
 traits$ITlength_mm <- as.numeric(as.character(traits$ITlength_mm))
 
-## Create a table grouping per bee and sex
+## Create a table grouping per bee
 group <- group_by(traits, bee)
 ## Calculate mean IT per each previous group
 nITperbee <- summarize(group, IT_mm=mean(ITlength_mm))
@@ -26,17 +26,17 @@ nITperbee <- summarize(group, IT_mm=mean(ITlength_mm))
 
 ######### Read male bee dataset
 male<-read.csv("data/2016_male_bee_dataset.csv")
-#### since we are not separing by sex, is this necessary???
-## Clean sex data. There are many classes
-male<-male[-which(male$bee_sex == "Unidentified"|male$bee_sex == ""),]
-male$bee_sex[which(male$bee_sex=="m")]<-"M"
-male$bee_sex <- as.character(male$bee_sex)
-
-## Change names of variable to be the same as the traits dataframe.
-## Change sex names also
-male$bee_sex[which(male$bee_sex=="M")]<-"male"
-male$bee_sex[which(male$bee_sex=="F")]<-"female"
-male$sex <- male$bee_sex
+# #### since we are not separing by sex, is this necessary???
+# ## Clean sex data. There are many classes
+# male<-male[-which(male$bee_sex == "Unidentified"|male$bee_sex == ""),]
+# male$bee_sex[which(male$bee_sex=="m")]<-"M"
+# male$bee_sex <- as.character(male$bee_sex)
+# 
+# ## Change names of variable to be the same as the traits dataframe.
+# ## Change sex names also
+# male$bee_sex[which(male$bee_sex=="M")]<-"male"
+# male$bee_sex[which(male$bee_sex=="F")]<-"female"
+# male$sex <- male$bee_sex
 
 
 ### could get some matches. need to clean up traits table a lot
@@ -44,16 +44,16 @@ male$sex <- male$bee_sex
 #hichensi=weemsi
 #most melissodes spp. might have incorrect gender right now (e.g. disponsa instead of the correct disponsus)
 
-## database of IT  separate by bee and sex
-group <- group_by(traits, bee, sex)
-nITperbee2 <- summarize(group, measured=n())
-
-## database of michael separate by bee and sex
-group <- group_by(male, bee, bee_sex)
-michaeldata <- summarize(group, abundance=n())
-maleIT <- michaeldata %>%rename(sex=bee_sex) %>%  left_join(nITperbee2, by=(c("bee","sex")))
-
-sum(table(maleIT$measured)) #147
+# ## database of IT  separate by bee and sex
+# group <- group_by(traits, bee, sex)
+# nITperbee2 <- summarize(group, measured=n())
+# 
+# ## database of michael separate by bee and sex
+# group <- group_by(male, bee, bee_sex)
+# michaeldata <- summarize(group, abundance=n())
+# maleIT <- michaeldata %>%rename(sex=bee_sex) %>%  left_join(nITperbee2, by=(c("bee","sex")))
+# 
+# sum(table(maleIT$measured)) #147
 
 ## mow the same but not separing by sex
 ## database of traits. separate by bee and sex
@@ -67,14 +67,10 @@ maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
 
 #### How many species are in the dataset?
-sum(table(maleIT$abundance)) # 164
+sum(table(maleIT$abundance)) # 166
 ### How many species do we have IT data?
 sum(table(maleIT$measured))  # 122
 
-
-plot(maleIT$abundance~maleIT$measured,ylim=c(0,10),xlim=c(0,4))
-
-42*5+11*4+9*3+8*2+12
 
 
 ############# Read floral traits database
@@ -96,9 +92,6 @@ michaelflowers <- michaeldata %>% left_join(flowersmeasured, by=(c("genus_specie
 sum(table(michaelflowers$abundance)) # 113
 ### How many species do we have floral traits data?
 sum(table(michaelflowers$measured))  # 44
-
-
-sum(whichflowers$abundance[complete.cases(whichflowers$abundance)])
 
 
 # Which species we lack data, and how many visits do they have
@@ -138,48 +131,24 @@ generaldata <- male %>% left_join(nITperbee, by=(c("bee")))
 generaldata <- generaldata %>% left_join(floraltraits, by=(c("genus_species")))
 
 
+## check family data
+beeswithoutfamily <- dplyr::filter(generaldata, is.na(bee_family))
+table(droplevels(beeswithoutfamily$bee_genus))
 
+generaldata$bee_family[generaldata$bee_genus=="Triepeolus"]<-"Apidae"
+generaldata$bee_family[generaldata$bee_genus=="Ceratina"]<-"Apidae"
+generaldata$bee_family[generaldata$bee_genus=="Nomada"]<-"Apidae"
+generaldata$bee_family[generaldata$bee_genus=="Lasioglossum"]<-"Halictidae"
+generaldata$bee_family[generaldata$bee_genus=="Hylaeus"]<-"Colletidae"
+generaldata$bee_family[generaldata$bee_genus=="Dufouria"]<-"Halictidae"
 
-## we need family data
-generaldata$bee_family <- generaldata$bee_genus
-generaldata$bee_family <- as.character(generaldata$bee_family)
+# remove other bugs
+generaldata<-generaldata[-which(generaldata$bee_genus == "sand wasp"|generaldata$bee_genus == "Anacrabro"),]
 
-generaldata$bee_family[generaldata$bee_family=="Xylocopa"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Triepeolus"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Stelis"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Sphecodes"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="sand wasp"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Ptilothrix"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Pseudoanthidium"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Osmia"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Nomada"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Melissodes"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Megachile"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Lithurgus"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Lasioglossum"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Hoplitis"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Heriades"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Halictus"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Hylaeus"]<-"Colletidae"
-generaldata$bee_family[generaldata$bee_family=="Dufouria"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Coelioxys"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Ceratina"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Calliopsis"]<-"Andrenidae"
-generaldata$bee_family[generaldata$bee_family=="Bombus"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Augochloropsis"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Augochlorella"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Augochlora"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Anthophora"]<-"Apidae"
-generaldata$bee_family[generaldata$bee_family=="Agapostemon"]<-"Halictidae"
-generaldata$bee_family[generaldata$bee_family=="Anacrabro"]<-"Others"
-generaldata$bee_family[generaldata$bee_family=="Andrena"]<-"Andrenidae"
-generaldata$bee_family[generaldata$bee_family=="Anthidiellum"]<-"Megachilidae"
-generaldata$bee_family[generaldata$bee_family=="Anthidium"]<-"Megachilidae"
-
+#I think all bees have families now
+generaldata[is.na(generaldata$bee_family),]
 table(generaldata$bee_family)
 
-# Remove other bugs
-generaldata<-generaldata[-which(generaldata$bee_family == "Others"),]
 
 # Calculate bee proboscis length and body size
 Out <- ITconverter(IT = generaldata$IT_mm, family = generaldata$bee_family)
@@ -189,7 +158,15 @@ generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 
 
 #drop some yucky columns
-generaldata<-generaldata %>% select (-c("sex","plant_code.x", "plant_species.x", "plant_genus.x", "plant_code.y", "plant_genus.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
+generaldata<-generaldata %>% select (-c("plant_code.x", "plant_species.x", "plant_genus.x", "plant_code.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
+
+## time variables
+
+generaldata$boutstart<- as.POSIXct(strptime(generaldata$boutstart, format="%Y-%m-%d %H:%M:%OS"))
+generaldata$boutend= as.POSIXct(strptime(generaldata$boutend, format="%Y-%m-%d %H:%M:%OS"))
+
+generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutstart, boutend), na.rm=T))
+
 
 ### add bee families
 # traittab<-read.csv("data/wlab_db_5-31-18_3-21 PM_species_traits.csv")
