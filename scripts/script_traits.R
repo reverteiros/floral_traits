@@ -3,6 +3,7 @@ require(devtools)
 library(BeeIT)
 library(plyr)
 library(dplyr)
+library(lubridate)
 
 ############# Read IT database
 traits<-read.csv("data/wlab_db_5-31-18_3-21 PM_specimen_level_traits.csv")

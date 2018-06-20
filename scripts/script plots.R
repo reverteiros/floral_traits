@@ -2,8 +2,6 @@
 source("scripts/script_traits.R")
 
 library(ggplot2)
-library(lubridate)
-
 
 ## Define subsets of variables with appropriate names
 
@@ -55,42 +53,12 @@ plot(proboscislongerthanflowers$IT_mm~proboscislongerthanflowers$width,ylab="IT 
 plot(proboscisshorterthanflowers$tongue_length.tongue~proboscisshorterthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
 plot(proboscisshorterthanflowers$IT_mm~proboscisshorterthanflowers$width,ylab="IT distance (mm)", xlab="Flower width (mm)")
 
-<<<<<<< HEAD
-# From the bees with shorter proboscis than the flowers they visit, separate the bees that are larger than flowers than the ones smaller. smaller bees can crawl into the flowers, exclude
-
-hist(beeslargerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
-hist(beeslargerthanflowers$tongue_length.tongue, xlab="Tongue length (mm)",main="")
-=======
-plot(proboscisshorterthanflowers$tongue_length.tongue~proboscisshorterthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)",xlim=c(0,32),ylim=c(0,15))
-plot(proboscisshorterthanflowers$IT_mm~proboscisshorterthanflowers$width,ylab="IT distance (mm)", xlab="Flower width (mm)",xlim=c(0,6),ylim=c(0,6))
-
-# Calculate the difference between proboscis length and flower depth for bees
-# that have shorter proboscis than the flowers they visit, histogram
-
-proboscisshorterthanflowers$difference <- proboscisshorterthanflowers$depth-proboscisshorterthanflowers$tongue_length.tongue
-
+# Difference between proboscis length and flower depth for bees that have shorter proboscis than the flowers they visit
 hist(proboscisshorterthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
 
-# we barely see anything, restrict to 5mm difference
-
-difff <- dplyr::filter(proboscisshorterthanflowers, difference < 5)
-
-hist(difff$difference, xlab="Flower depth - tongue length (mm)",main="")
-
-# From these data, separate the bees that are larger than flowers than the ones smaller
-# given that heads were a bit bigger as I recall than IT, might want to move this a bit. 
-
-beeslargerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm/0.75 > width)
-beessmallerthanflowers <- dplyr::filter(proboscisshorterthanflowers, IT_mm/0.75 < width)
-
+# From the bees with shorter proboscis than the flowers they visit, separate the bees that are larger than flowers than the ones smaller. smaller bees can crawl into the flowers, exclude
 hist(beeslargerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
-
-hist(beessmallerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
-
-length(beeslargerthanflowers$difference)
-length(beessmallerthanflowers$difference)
-
->>>>>>> e60932ed40aa2d68c4bb620cad095d90da060ff7
+hist(beeslargerthanflowers$tongue_length.tongue, xlab="Tongue length (mm)",main="")
 plot(beeslargerthanflowers$tongue_length.tongue~beeslargerthanflowers$depth,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
 
 hist(beessmallerthanflowers$difference, xlab="Flower depth - tongue length (mm)",main="")
@@ -98,12 +66,10 @@ hist(beessmallerthanflowers$tongue_length.tongue, xlab="Tongue length (mm)",main
 plot(beessmallerthanflowers$IT_mm~beessmallerthanflowers$width,ylab="Tongue length (mm)", xlab="Flower depth (mm)")
 
 # Specifically with the bees that are bigger than the flowers they visit, Plot the difference between corolla depth and tongue length with flower depth and tongue length
-
 plot(beeslargerthanflowers$difference~beeslargerthanflowers$depth)
 plot(beeslargerthanflowers$difference~beeslargerthanflowers$tongue_length.tongue)
 
 # The same plot as before but separating by: bee family, plant family, and plant genus
-
 beeslargerthanflowers %>%
   ggplot(aes(x=tongue_length.tongue, difference))+
   geom_jitter(aes(color=bee_family),alpha=0.1, height=0.1)+
@@ -119,36 +85,13 @@ beeslargerthanflowers %>%
   geom_jitter(aes(color=plant_genus.y),alpha=0.1, height=0.1)+
   theme_classic()
 
-<<<<<<< HEAD
 ## plot differences along time of day
-
 beeslargerthanflowers %>%
   ggplot(aes(x=midbout, difference))+
   geom_point(aes(color=bee_size))+
   geom_smooth(aes(color=bee_size))+
-=======
-beeslargerthanflowers %>%
-  ggplot(aes(x=depth, difference))+
-  geom_point(aes(color=plant_gs))+
-  theme_classic()
 
-table(droplevels(as.factor(beeslargerthanflowers$plant_gs)))
-
-flowers <- floraltraits %>% semi_join(beeslargerthanflowers, by=(c("genus_species")))
-
-
-shortflowers <- dplyr::filter(beeslargerthanflowers, difference < 5)
-
-hist(shortflowers$difference)
-
-shortflowers %>%
-  ggplot(aes(x=depth, tongue_length.tongue))+
-  geom_point(aes(color=plant_gs))+
->>>>>>> e60932ed40aa2d68c4bb620cad095d90da060ff7
-  theme_classic()
-  
-### which plants do short-tongued bees visit
-
+### which plants do short and longued-tongued bees visit, in which abundance and mean corolla depth of these species
 plot(longtonguedbeesflowers$abundance~longtonguedbeesflowers$depth)
 plot(shortonguedbeesflowers$abundance~shortonguedbeesflowers$depth)
  
