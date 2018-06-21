@@ -24,6 +24,12 @@ group <- group_by(traits, bee)
 ## Calculate mean IT per each previous group
 nITperbee <- summarize(group, IT_mm=mean(ITlength_mm))
 
+# ## check intra-species variability in IT
+# nITperbee <- summarize(group, IT_mm=mean(ITlength_mm),CV=(sd(ITlength_mm)/mean(ITlength_mm)*100),n=n())
+# 
+# plot(nITperbee$CV~nITperbee$n,xlim=c(0,15))
+# plot(nITperbee$CV~nITperbee$n)
+
 
 ######### Read male bee dataset
 male<-read.csv("data/2016_male_bee_dataset.csv")
@@ -58,20 +64,22 @@ male<-read.csv("data/2016_male_bee_dataset.csv")
 
 ## mow the same but not separing by sex
 ## database of traits. separate by bee and sex
-group <- group_by(traits, bee)
-nITperbee3 <- summarize(group, measured=n())
+group1 <- group_by(traits, bee)
+nITperbee3 <- summarize(group1, measured=n())
 
 ## database of michael separate by bee and sex
-group <- group_by(male, bee)
-michaeldata <- summarize(group, abundance=n())
+group2 <- group_by(male, bee)
+michaeldata <- summarize(group2, abundance=n())
 maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
+# species that have measures but we will need to measure more individuals
+newmeasures <- dplyr::filter(maleIT, !is.na(measured)&abundance>measured&measured<10)
+#table(newmeasures$measured)
 
 #### How many species are in the dataset?
 sum(table(maleIT$abundance)) # 166
 ### How many species do we have IT data?
-sum(table(maleIT$measured))  # 122
-
+sum(table(maleIT$measured))  # 123
 
 
 ############# Read floral traits database
