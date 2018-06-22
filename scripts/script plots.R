@@ -6,10 +6,7 @@ library(ggplot2)
 ## Define subsets of variables with appropriate names
 
 # Work only with the plants from which we have data on traits
-subsetgeneraldata <- generaldata[which(generaldata$depth != "NA"),]
-
-##### we can drop cirsium because nobody is foraging on nectar there
-subsetgeneraldata <- dplyr::filter(subsetgeneraldata, plant_gs != "Cirsium_vulgare")
+subsetgeneraldata <- dplyr::filter(generaldata, !is.na(depth))
 
 # New variable: difference between flower depth and proboscis length
 subsetgeneraldata$difference <- subsetgeneraldata$depth-subsetgeneraldata$tongue_length.tongue
@@ -32,13 +29,26 @@ longtonguedbeesflowers <- summarize(group1, abundance=n(),depth=mean(depth))
 group2 <- group_by(shorttonguedbees, plant_gs)
 shorttonguedbeesflowers <- summarize(group2, abundance=n(),depth=mean(depth))
 
-#in tidyverse, 
+## data for histograms with species
 
-# ltbf<-longtonguedbees %>% 
-#   group_by(plant_gs) %>%#could also group by short vs long here
-#   summarize(abund=n(), depth=mean(depth))
+histbeespecies<-subsetgeneraldata %>%
+  group_by(bee) %>%
+  summarize(tongue=mean(tongue_length.tongue), IT=mean(IT_improved),abundance=n())
 
+histplantspecies<-subsetgeneraldata %>%
+  group_by(plant_gs) %>%
+  summarize(depth=mean(depth), width=mean(width))
 
+histplantspecies<-subsetgeneraldata %>%
+  group_by(bee,plant_gs) %>%
+  summarize(dif=mean(difference))
+
+hist(histplantspecies$dif)
+
+longtonguedbees <- dplyr::filter(subsetgeneraldata, proboscislonger == "false"&beewider=="true")
+View(longtonguedbees)
+
+hist(longtonguedbees$difference)
 
 ############ General plots
 
@@ -46,10 +56,18 @@ shorttonguedbeesflowers <- summarize(group2, abundance=n(),depth=mean(depth))
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
 #all bees improved IT histogram
 hist(subsetgeneraldata$IT_improved, xlab="IT (mm)",main="")
+#bee species tongue length histogram
+hist(histbeespecies$tongue, xlab="Tongue length (mm)",main="")
+#bee species IT histogram
+hist(histbeespecies$IT, xlab="IT (mm)",main="")
 #all visits corolla depth histogram
 hist(subsetgeneraldata$depth, xlab="Flower depth (mm)",main="")
 #all visits corolla width histogram
 hist(subsetgeneraldata$width, xlab="Flower width (mm)",main="")
+#flower species corolla depth histogram
+hist(histplantspecies$depth, xlab="Flower depth (mm)",main="")
+#flower species corolla width histogram
+hist(histplantspecies$width, xlab="Flower width (mm)",main="")
 #all bees difference between depth and tongue
 hist(subsetgeneraldata$difference, xlab="Flower depth - tongue length (mm)",main="")
 #this looks impressively balanced around 0! What is null i.e. totally random visits? 
@@ -75,6 +93,7 @@ table(subsetgeneraldata)
 subsetgeneraldata %>%
   ggplot(aes(x=depth, tongue_length.tongue))+
   geom_point(aes(color=bee_family))+
+  geom_smooth(aes(color=bee_family))+
   theme_classic()
 
 subsetgeneraldata %>%
@@ -85,18 +104,18 @@ subsetgeneraldata %>%
 ## same plots than before but separating by socility degree
 subsetgeneraldata %>%
   ggplot(aes(x=depth, tongue_length.tongue))+
-  geom_point(aes(color=sociality))+
+  geom_jitter(aes(color=sociality),alpha=0.1, height=0.1)+
   theme_classic()
 
 subsetgeneraldata %>%
   ggplot(aes(x=width, IT_improved))+
-  geom_point(aes(color=sociality))+
+  geom_jitter(aes(color=sociality),alpha=0.1, height=0.1)+
   theme_classic()
 
 ## plot differences along time of day
 subsetgeneraldata %>%
   ggplot(aes(x=midbout, difference))+
-  geom_point(aes(color=proboscislonger))+
+  geom_jitter(aes(color=proboscislonger),alpha=0.1, height=0.1)+
   geom_smooth(aes(color=proboscislonger))+
   theme_classic()
 
