@@ -18,49 +18,22 @@ subsetgeneraldata<-subsetgeneraldata %>% mutate(proboscislonger=if_else(tongue_l
 subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
 
-
-# Which species do visit long and short-tongued bees, in which abundance and mean depth of the plant species
-longtonguedbees <- dplyr::filter(subsetgeneraldata, bee_size == "long")
-shorttonguedbees <- dplyr::filter(subsetgeneraldata, bee_size == "short")
-
-group1 <- group_by(longtonguedbees, plant_gs)
-longtonguedbeesflowers <- summarize(group1, abundance=n(),depth=mean(depth))
-
-group2 <- group_by(shorttonguedbees, plant_gs)
-shorttonguedbeesflowers <- summarize(group2, abundance=n(),depth=mean(depth))
-
 ## data for histograms with species
-
 histbeespecies<-subsetgeneraldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue), IT=mean(IT_improved),abundance=n())
-
+  summarize(tongue=mean(tongue_length.tongue), integertongue=mean(as.integer(tongue_length.tongue)),IT=mean(IT_improved),abundance=n())
 histplantspecies<-subsetgeneraldata %>%
   group_by(plant_gs) %>%
-  summarize(depth=mean(depth), width=mean(width))
+  summarize(depth=mean(depth), width=mean(width), integerdepth=mean(as.integer(depth)),abundance=n())
 
-histplantspecies<-subsetgeneraldata %>%
+## data for bubble plots with interaction strength of each plant-pollinator interaction
+interactionstrength<-subsetgeneraldata %>%
   group_by(bee,plant_gs) %>%
-  summarize(dif=mean(difference))
+  summarize(abundance=n(),tongue=mean(tongue_length.tongue),depth=mean(depth),it=mean(IT_improved),width=mean(width))
 
-hist(histplantspecies$dif)
-
-longtonguedbees <- dplyr::filter(subsetgeneraldata, proboscislonger == "false"&beewider=="true")
-View(longtonguedbees)
-
-hist(longtonguedbees$difference)
 
 ############ General plots
 
-subsetgeneraldata %>%
-  ggplot(aes(x=IT_improved),alpha=0.5)+
-  geom_histogram(alpha=0.5,fill="red")+
-  geom_histogram(aes(x=width),alpha=0.5)+
-  theme_classic()+
-  annotate(geom = "text", x = 3.2, y = 3500, label = "Red = Bee IT")+
-  annotate(geom = "text", x = 3.2, y = 3000, label = "Grey = Corolla width")
-
-  
 #all bees tongue length histogram
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
 #all bees improved IT histogram
@@ -81,71 +54,73 @@ hist(histplantspecies$width, xlab="Flower width (mm)",main="")
 hist(subsetgeneraldata$difference, xlab="Flower depth - tongue length (mm)",main="")
 #this looks impressively balanced around 0! What is null i.e. totally random visits? 
 
-### which corolla depth do long-and short-tongued bees preferentially visit
-hist(longtonguedbees$depth, xlab="Flower depth (mm)",main="")
-hist(shorttonguedbees$depth, xlab="Flower depth (mm)",main="")
-# looks like there is a pattern!!
+
+# Barplots (converting tongue length and corolla depth to integer to simplify and make code easier) with each bar is all the flowers/bees with a specific mm. Each colour represents a diferent species, so some bars are the sum of several species with the same trait value
+histbeespecies %>%
+  ggplot(aes(x=integertongue, y=abundance, fill=bee)) +
+  geom_bar(stat="identity")+
+  theme_classic()+
+  theme(legend.position="none")
+
+histplantspecies %>%
+  ggplot(aes(x=integerdepth, y=abundance, fill=plant_gs)) +
+  geom_bar(stat="identity")+
+  theme_classic()+
+  theme(legend.position="none")
 
 
-## plot depth and proboscis length separing proboscis longer and shorter than flowers
+#### Plots comparing proboscis and depth
+# combining the histograms of proboscis and depth
+subsetgeneraldata %>%
+  ggplot(aes(x=tongue_length.tongue),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  geom_histogram(aes(x=depth),alpha=0.5)+
+  theme_classic()
+# dotplot depth and proboscis length separing proboscis longer and shorter than flowers
 subsetgeneraldata %>%
   ggplot(aes(x=depth, tongue_length.tongue))+
   geom_jitter(aes(color=proboscislonger),alpha=0.1, height=0.1)+
   theme_classic()
-## plot width and IT separing bees larger and smaller than flowers
+# bubble plots with interaction strength of each plant-pollinator interaction
+symbols(interactionstrength$depth, interactionstrength$tongue, circles = sqrt(interactionstrength$abundance/pi), inches = 0.25, fg = "white", bg = "red", ylab=c("Proboscis length (mm)"),xlab=c("Flower depth (mm)"), main = "Sized by Interaction Strength")
+abline(a = 0, b = 1)#adding the 1-1 line
+
+#### Plots comparing IT and width
+# combining the histograms of IT and width
+subsetgeneraldata %>%
+  ggplot(aes(x=IT_improved),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  geom_histogram(aes(x=width),alpha=0.5)+
+  theme_classic()#+
+#annotate(geom = "text", x = 3.2, y = 3500, label = "Red = Bee IT")+
+#annotate(geom = "text", x = 3.2, y = 3000, label = "Grey = Corolla width")
+
+# dotplot width and IT separing bees larger and smaller than flowers
 subsetgeneraldata %>%
   ggplot(aes(x=width, IT_improved))+
   geom_point(aes(color=beewider))+
   theme_classic()
 table(subsetgeneraldata)
-
-## same plots than before but separating by bee family
-subsetgeneraldata %>%
-  ggplot(aes(x=depth, tongue_length.tongue))+
-  geom_point(aes(color=bee_family))+
-  geom_smooth(aes(color=bee_family))+
-  theme_classic()
-
-subsetgeneraldata %>%
-  ggplot(aes(x=width, IT_improved))+
-  geom_point(aes(color=bee_family))+
-  theme_classic()
-
-## same plots than before but separating by socility degree
-subsetgeneraldata %>%
-  ggplot(aes(x=depth, tongue_length.tongue))+
-  geom_jitter(aes(color=sociality),alpha=0.1, height=0.1)+
-  theme_classic()
-
-subsetgeneraldata %>%
-  ggplot(aes(x=width, IT_improved))+
-  geom_jitter(aes(color=sociality),alpha=0.1, height=0.1)+
-  theme_classic()
-
-## plot differences along time of day
-subsetgeneraldata %>%
-  ggplot(aes(x=midbout, difference))+
-  geom_jitter(aes(color=proboscislonger),alpha=0.1, height=0.1)+
-  geom_smooth(aes(color=proboscislonger))+
-  theme_classic()
+# bubble plots with interaction strength of each plant-pollinator interaction
+symbols(interactionstrength$width, interactionstrength$it, circles = sqrt(interactionstrength$abundance/pi), inches = 0.25, fg = "white", bg = "red", ylab=c("IT (mm)"),xlab=c("Flower width (mm)"), main = "Sized by Interaction Strength")
+abline(a = 0, b = 1)#adding the 1-1 line
 
 
-# # Specifically with the bees that are bigger than the flowers they visit, Plot the difference between corolla depth and tongue length with flower depth and tongue length
-# plot(beeslargerthanflowers$difference~beeslargerthanflowers$depth)
-# plot(beeslargerthanflowers$difference~beeslargerthanflowers$tongue_length.tongue)
-
-# The same plot as before but separating by: bee family, plant family, and plant genus
-# beeslargerthanflowers %>%
-#   ggplot(aes(x=tongue_length.tongue, difference))+
-#   geom_jitter(aes(color=bee_family),alpha=0.1, height=0.1)+
+# ## same plots than before but separating by sociality degree
+# subsetgeneraldata %>%
+#   ggplot(aes(x=depth, tongue_length.tongue))+
+#   geom_jitter(aes(color=sociality),alpha=0.1, height=0.1)+
 #   theme_classic()
 # 
-# beeslargerthanflowers %>%
-#   ggplot(aes(x=tongue_length.tongue, difference))+
-#   geom_jitter(aes(color=plant_family),alpha=0.1, height=0.1)+
+# subsetgeneraldata %>%
+#   ggplot(aes(x=width, IT_improved))+
+#   geom_jitter(aes(color=sociality),alpha=0.1, height=0.1)+
 #   theme_classic()
 # 
-# beeslargerthanflowers %>%
-#   ggplot(aes(x=tongue_length.tongue, difference))+
-#   geom_jitter(aes(color=plant_genus.y),alpha=0.1, height=0.1)+
+# ## plot differences along time of day
+# subsetgeneraldata %>%
+#   ggplot(aes(x=midbout, difference))+
+#   geom_jitter(aes(color=proboscislonger),alpha=0.1, height=0.1)+
+#   geom_smooth(aes(color=proboscislonger))+
 #   theme_classic()
+
