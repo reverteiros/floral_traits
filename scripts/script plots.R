@@ -52,6 +52,15 @@ hist(longtonguedbees$difference)
 
 ############ General plots
 
+subsetgeneraldata %>%
+  ggplot(aes(x=IT_improved),alpha=0.5)+
+  geom_histogram(alpha=0.5,fill="red")+
+  geom_histogram(aes(x=width),alpha=0.5)+
+  theme_classic()+
+  annotate(geom = "text", x = 3.2, y = 3500, label = "Red = Bee IT")+
+  annotate(geom = "text", x = 3.2, y = 3000, label = "Grey = Corolla width")
+
+  
 #all bees tongue length histogram
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
 #all bees improved IT histogram
@@ -77,10 +86,11 @@ hist(longtonguedbees$depth, xlab="Flower depth (mm)",main="")
 hist(shorttonguedbees$depth, xlab="Flower depth (mm)",main="")
 # looks like there is a pattern!!
 
+
 ## plot depth and proboscis length separing proboscis longer and shorter than flowers
 subsetgeneraldata %>%
   ggplot(aes(x=depth, tongue_length.tongue))+
-  geom_point(aes(color=proboscislonger))+
+  geom_jitter(aes(color=proboscislonger),alpha=0.1, height=0.1)+
   theme_classic()
 ## plot width and IT separing bees larger and smaller than flowers
 subsetgeneraldata %>%
