@@ -34,6 +34,8 @@ interactionstrength<-subsetgeneraldata %>%
 
 
 ############ plots
+# rank-abundance plot of bee species
+barplot(sort(histbeespecies$abundance,decreasing=T))
 
 #all bees tongue length histogram
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
