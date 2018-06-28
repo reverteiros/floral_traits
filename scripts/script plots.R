@@ -32,7 +32,7 @@ interactionstrength<-subsetgeneraldata %>%
   summarize(abundance=n(),tongue=mean(tongue_length.tongue),depth=mean(depth),it=mean(IT_improved),width=mean(width))
 
 
-############ General plots
+############ plots
 
 #all bees tongue length histogram
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
@@ -104,6 +104,15 @@ table(subsetgeneraldata)
 # bubble plots with interaction strength of each plant-pollinator interaction
 symbols(interactionstrength$width, interactionstrength$it, circles = sqrt(interactionstrength$abundance/pi), inches = 0.25, fg = "white", bg = "red", ylab=c("IT (mm)"),xlab=c("Flower width (mm)"), main = "Sized by Interaction Strength")
 abline(a = 0, b = 1)#adding the 1-1 line
+
+
+## test with geom_tile, doesn't work
+
+ggplot(interactionstrength, aes(depth, tongue, fill=abundance))+
+  geom_raster(hjust=0.5,vjust=0.5,interpolate=TRUE) +
+  scale_fill_gradient(low = "black", high = "white")+
+  theme_classic()
+
 
 
 # ## same plots than before but separating by sociality degree
