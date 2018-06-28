@@ -6,8 +6,9 @@ library(ggplot2)
 ## Define subsets of variables with appropriate names
 
 # Work only with the plants from which we have data on traits
-subsetgeneraldata <- dplyr::filter(generaldata, !is.na(depth))
+subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)& !site=="Featherbed"& !site=="D&R Greenway")&!is.na(sampling_round))
 
+subsetgeneraldata$sampling_round
 # New variable: difference between flower depth and proboscis length
 subsetgeneraldata$difference <- subsetgeneraldata$depth-subsetgeneraldata$tongue_length.tongue
 # Separate long tongued-bees from short-tongued bees within the dataset. 6mm is arbitrary
@@ -54,6 +55,31 @@ hist(histplantspecies$width, xlab="Flower width (mm)",main="")
 hist(subsetgeneraldata$difference, xlab="Flower depth - tongue length (mm)",main="")
 #this looks impressively balanced around 0! What is null i.e. totally random visits? 
 
+# histograms separing per site or sampling round
+# tongue length
+subsetgeneraldata %>%
+  ggplot(aes(x=tongue_length.tongue),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ site,  scales="free")
+
+subsetgeneraldata %>%
+  ggplot(aes(x=tongue_length.tongue),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ sampling_round,  scales="free")
+# corolla depth
+subsetgeneraldata %>%
+  ggplot(aes(x=depth),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ site,  scales="free")
+
+subsetgeneraldata %>%
+  ggplot(aes(x=depth),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ sampling_round,  scales="free")
 
 # Barplots (converting tongue length and corolla depth to integer to simplify and make code easier) with each bar is all the flowers/bees with a specific mm. Each colour represents a diferent species, so some bars are the sum of several species with the same trait value
 histbeespecies %>%
@@ -112,7 +138,6 @@ ggplot(interactionstrength, aes(depth, tongue, fill=abundance))+
   geom_raster(hjust=0.5,vjust=0.5,interpolate=TRUE) +
   scale_fill_gradient(low = "black", high = "white")+
   theme_classic()
-
 
 
 # ## same plots than before but separating by sociality degree
