@@ -411,8 +411,6 @@ stirling5 <- stirling5 %>% mutate(nulldiff=nullflower-nullbees)
 
 nullpersiteandtime <- dplyr::bind_rows(stirling1,stirling2,stirling3,stirling4,stirling5,ias1,ias2,ias3,ias4,ias5,baldpate1,baldpate2,baldpate3,baldpate4,baldpate5,urwa1,urwa2,urwa3,urwa4,urwa5,coldsoil1,coldsoil2,coldsoil3,coldsoil4,coldsoil5,foxhill1,foxhill2,foxhill3,foxhill4,foxhill5)
 
-names(nullpersiteandtime)
-
 filtered <- dplyr::filter(nullpersiteandtime, !site=="Featherbed"& !site=="D&R Greenway"& !is.na(sampling_round))
 
  
