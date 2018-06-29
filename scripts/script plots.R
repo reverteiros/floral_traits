@@ -6,15 +6,13 @@ library(ggplot2)
 ## Define subsets of variables with appropriate names
 
 # Work only with the plants from which we have data on traits
-subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)& !site=="Featherbed"& !site=="D&R Greenway")&!is.na(sampling_round))
+subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)& !site=="Featherbed"& !site=="D&R Greenway"))
 
-subsetgeneraldata$sampling_round
+summary(subsetgeneraldata)
 # New variable: difference between flower depth and proboscis length
 subsetgeneraldata$difference <- subsetgeneraldata$depth-subsetgeneraldata$tongue_length.tongue
-# Separate long tongued-bees from short-tongued bees within the dataset. 6mm is arbitrary
-subsetgeneraldata<-subsetgeneraldata %>% mutate(bee_size=if_else(tongue_length.tongue>6, "long", "short"))
+# Proboscis is logner than flower depth or not
 subsetgeneraldata<-subsetgeneraldata %>% mutate(proboscislonger=if_else(tongue_length.tongue>depth, "true", "false"))
-
 # Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
 subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
@@ -83,6 +81,14 @@ subsetgeneraldata %>%
   theme_classic()+
   facet_wrap(~ sampling_round,  scales="free")
 
+# observe the variation in flower depth distribution across space and time
+dplyr::filter(subsetgeneraldata, !is.na(sampling_round)) %>%
+  ggplot(aes(x=depth),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  facet_wrap(~ sampling_round+site,  scales="free")+
+  theme(strip.placement="none")
+
+  
 # Barplots (converting tongue length and corolla depth to integer to simplify and make code easier) with each bar is all the flowers/bees with a specific mm. Each colour represents a diferent species, so some bars are the sum of several species with the same trait value
 histbeespecies %>%
   ggplot(aes(x=integertongue, y=abundance, fill=bee)) +
