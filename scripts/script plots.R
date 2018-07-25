@@ -6,14 +6,13 @@ library(ggplot2)
 ## Define subsets of variables with appropriate names
 
 # Work only with the plants from which we have data on traits
-subsetgeneraldata <- dplyr::filter(generaldata, !is.na(depth))
+subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)& !site=="Featherbed"& !site=="D&R Greenway"))
 
+summary(subsetgeneraldata)
 # New variable: difference between flower depth and proboscis length
 subsetgeneraldata$difference <- subsetgeneraldata$depth-subsetgeneraldata$tongue_length.tongue
-# Separate long tongued-bees from short-tongued bees within the dataset. 6mm is arbitrary
-subsetgeneraldata<-subsetgeneraldata %>% mutate(bee_size=if_else(tongue_length.tongue>6, "long", "short"))
+# Proboscis is logner than flower depth or not
 subsetgeneraldata<-subsetgeneraldata %>% mutate(proboscislonger=if_else(tongue_length.tongue>depth, "true", "false"))
-
 # Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
 subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
@@ -32,7 +31,9 @@ interactionstrength<-subsetgeneraldata %>%
   summarize(abundance=n(),tongue=mean(tongue_length.tongue),depth=mean(depth),it=mean(IT_improved),width=mean(width))
 
 
-############ General plots
+############ plots
+# rank-abundance plot of bee species
+barplot(sort(histbeespecies$abundance,decreasing=T))
 
 #all bees tongue length histogram
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="")
@@ -54,7 +55,40 @@ hist(histplantspecies$width, xlab="Flower width (mm)",main="")
 hist(subsetgeneraldata$difference, xlab="Flower depth - tongue length (mm)",main="")
 #this looks impressively balanced around 0! What is null i.e. totally random visits? 
 
+# histograms separing per site or sampling round
+# tongue length
+subsetgeneraldata %>%
+  ggplot(aes(x=tongue_length.tongue),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ site,  scales="free")
 
+subsetgeneraldata %>%
+  ggplot(aes(x=tongue_length.tongue),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ sampling_round,  scales="free")
+# corolla depth
+subsetgeneraldata %>%
+  ggplot(aes(x=depth),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ site,  scales="free")
+
+subsetgeneraldata %>%
+  ggplot(aes(x=depth),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  theme_classic()+
+  facet_wrap(~ sampling_round,  scales="free")
+
+# observe the variation in flower depth distribution across space and time
+dplyr::filter(subsetgeneraldata, !is.na(sampling_round)) %>%
+  ggplot(aes(x=depth),alpha=0.5)+
+  geom_histogram(alpha=0.5)+
+  facet_wrap(~ sampling_round+site,  scales="free")+
+  theme(strip.placement="none")
+
+  
 # Barplots (converting tongue length and corolla depth to integer to simplify and make code easier) with each bar is all the flowers/bees with a specific mm. Each colour represents a diferent species, so some bars are the sum of several species with the same trait value
 histbeespecies %>%
   ggplot(aes(x=integertongue, y=abundance, fill=bee)) +
@@ -104,6 +138,14 @@ table(subsetgeneraldata)
 # bubble plots with interaction strength of each plant-pollinator interaction
 symbols(interactionstrength$width, interactionstrength$it, circles = sqrt(interactionstrength$abundance/pi), inches = 0.25, fg = "white", bg = "red", ylab=c("IT (mm)"),xlab=c("Flower width (mm)"), main = "Sized by Interaction Strength")
 abline(a = 0, b = 1)#adding the 1-1 line
+
+
+## test with geom_tile, doesn't work
+
+ggplot(interactionstrength, aes(depth, tongue, fill=abundance))+
+  geom_raster(hjust=0.5,vjust=0.5,interpolate=TRUE) +
+  scale_fill_gradient(low = "black", high = "white")+
+  theme_classic()
 
 
 # ## same plots than before but separating by sociality degree
