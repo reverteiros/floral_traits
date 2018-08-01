@@ -6,9 +6,8 @@ library(ggplot2)
 ## Define subsets of variables with appropriate names
 
 # Work only with the plants from which we have data on traits
-subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)& !site=="Featherbed"& !site=="D&R Greenway"))
+subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth) & !Bombus=="N"))
 
-summary(subsetgeneraldata)
 # New variable: difference between flower depth and proboscis length
 subsetgeneraldata$difference <- subsetgeneraldata$depth-subsetgeneraldata$tongue_length.tongue
 # Proboscis is logner than flower depth or not
