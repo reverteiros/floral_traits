@@ -8,10 +8,6 @@ library(ggplot2)
 alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
 
 
-
-dplyr::filter(droplevels(dataformodel, !site=="Featherbed"& !site=="D&R Greenway") & !is.na(sampling_round)))
-
-
 # New variable: difference between flower depth and proboscis length
 alldata$difference <- alldata$depth-alldata$tongue_length.tongue
 

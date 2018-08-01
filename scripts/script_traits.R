@@ -178,7 +178,7 @@ generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutsta
 
 ## drop unused plots and doubtful interactions
 
-generaldata <- droplevels(dplyr::filter(generaldata, !site=="Featherbed"& !site=="D&R Greenway" & !keep=="D"))
+generaldata <- droplevels(dplyr::filter(generaldata, !site=="Featherbed"& !site=="D&R Greenway" & !keep=="D" & !is.na(sampling_round)))
 
 ### add bee families
 # traittab<-read.csv("data/wlab_db_5-31-18_3-21 PM_species_traits.csv")
