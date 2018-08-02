@@ -6,6 +6,7 @@ library(ggplot2)
 ### including all data
 
 alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
+alldata$difference <- alldata$tongue_length.tongue-alldata$depth
 
 databees<-alldata %>%
   group_by(bee) %>%
@@ -13,8 +14,6 @@ databees<-alldata %>%
 
 databees <- as.data.frame(databees)
 tongue <- databees$tongue
-tonguesampled <- sample(databees$tongue)
-databees$tonguesampled <- tonguesampled
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -22,13 +21,23 @@ dataflowers<-alldata %>%
 
 dataflowers <- as.data.frame(dataflowers)
 depth <- dataflowers$depth
-depthsampled <- sample(dataflowers$depth)
-dataflowers$depthsampled <- depthsampled
 
 
-datasampled <- alldata %>% left_join(databees, by=(c("bee")))
-datasampled <- datasampled %>% left_join(dataflowers, by=(c("plant_gs")))
+randomize <- function(n){
+  sumdifferences <- numeric(n)
+  for(i in 1:n){
+    tonguesampled <- sample(databees$tongue)
+    databees$tonguesampled <- tonguesampled
+    depthsampled <- sample(dataflowers$depth)
+    dataflowers$depthsampled <- depthsampled
+    datasampled <- alldata %>% left_join(databees, by=(c("bee")))
+    datasampled2 <- datasampled %>% left_join(dataflowers, by=(c("plant_gs")))
+    datasampled2$differencesampled <- datasampled2$tonguesampled-datasampled2$depthsampled
+    sumdifferences[i] <- sum(abs(datasampled2$differencesampled))
+  }
+  print(sumdifferences)
+}
 
-datasampled$difference <- datasampled$tonguesampled-datasampled$depthsampled
+hist(randomize(10000))
+abline(v = sum(abs(alldata$difference)))
 
-hist(datasampled$difference)
