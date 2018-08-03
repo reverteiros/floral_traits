@@ -11,6 +11,21 @@ subsetgeneraldata<-subsetgeneraldata[complete.cases(subsetgeneraldata),]
 subsetgeneraldata$sampling_round <- as.character(subsetgeneraldata$sampling_round)
 subsetgeneraldata$randomfactor <- paste(subsetgeneraldata$site, subsetgeneraldata$sampling_round, sep = "_")
 
+####
+#look at distribution of tongues and flowers across site-round
+
+subsetgeneraldata %>%mutate(sr=paste(site, sampling_round)) %>% 
+  ggplot(aes(sampling_round, tongue_length.tongue))+
+  geom_boxplot()+geom_jitter(size=0.05)+
+  theme_classic()+facet_wrap(~site)
+
+subsetgeneraldata %>%mutate(sr=paste(site, sampling_round)) %>% 
+  ggplot(aes(sampling_round, depth))+
+  geom_boxplot()+
+  geom_jitter(size=0.05)+
+  theme_classic()+facet_wrap(~site)
+
+
 subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
 
