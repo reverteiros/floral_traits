@@ -9,6 +9,10 @@ subsetgeneraldata$sampling_round <- as.character(subsetgeneraldata$sampling_roun
 subsetgeneraldata <- as.data.frame(subsetgeneraldata)
 subsetgeneraldata<-subsetgeneraldata[complete.cases(subsetgeneraldata),]
 subsetgeneraldata$sampling_round <- as.character(subsetgeneraldata$sampling_round)
+subsetgeneraldata$randomfactor <- paste(subsetgeneraldata$site, subsetgeneraldata$sampling_round, sep = "_")
+
+subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
+subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
 
 start_time<-Sys.time()
 two<-lqmm(fixed = tongue_length.tongue~depth+sampling_round, random = ~depth, group = site, tau=c(0.2), data=subsetgeneraldata,  control= list(method="df", LP_max_iter=10000))
@@ -36,18 +40,14 @@ summary(nine)
 
 subsetgeneraldatawiderbees <- droplevels(dplyr::filter(subsetgeneraldata, beewider=="true"))
 
-two<-lqmm(fixed = tongue_length.tongue~depth+sampling_round, random = ~depth, group = site, tau=c(0.2), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000))
-four<-lqmm(fixed = tongue_length.tongue~depth+sampling_round, random = ~depth, group = site, tau=c(0.4), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000))
-six<-lqmm(fixed = tongue_length.tongue~depth+sampling_round, random = ~depth, group = site, tau=c(0.6), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000))
-eight<-lqmm(fixed = tongue_length.tongue~depth+sampling_round, random = ~depth, group = site, tau=c(0.8), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000))
-nine<-lqmm(fixed = tongue_length.tongue~depth+sampling_round, random = ~depth, group = site, tau=c(0.9), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000 ))
+four<-lqmm(fixed = tongue_length.tongue~depth, random = ~depth, group = randomfactor, tau=c(0.4), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000))
+nine<-lqmm(fixed = tongue_length.tongue~depth, random = ~depth, group = randomfactor, tau=c(0.9), data=subsetgeneraldatawiderbees,  control= list(method="df", LP_max_iter=10000 ))
 
-summary(two)
 summary(four)
-summary(six)
-summary(eight)
-summary(nine)
 
+ranef(nine)
+summary(nine)
+VarCorr(four)
 
 
 ####### lqmm with all the data included
@@ -172,4 +172,22 @@ summary(nine)
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 # AIC:
 #   [1] 74027 (df = 9)
+
+
+###### dropping small bees
+
+# Quantile 0.2 
+# 
+# Fixed effects:
+#   Value Std. Error lower bound upper bound Pr(>|t|)   
+# (Intercept)      1.94408    0.84424     0.24751      3.6406 0.025579 *
+# depth            0.33667    0.10908     0.11746      0.5559 0.003329 **
+# sampling_round2  0.24925    0.38225    -0.51890      1.0174 0.517409   
+# sampling_round3  0.13877    0.42001    -0.70528      0.9828 0.742516   
+# sampling_round4  0.12094    0.33881    -0.55993      0.8018 0.722663   
+# sampling_round5  0.13877    0.34992    -0.56442      0.8420 0.693408   
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
 

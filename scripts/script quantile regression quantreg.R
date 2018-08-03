@@ -26,7 +26,7 @@ plot(summary(qr1), parm="subsetgeneraldata$depth",ylim=c(0,0.6))
 ### The same as before but dropping the bees that are smaller than the flowers and they crawl in
 subsetgeneraldatawiderbees <- droplevels(dplyr::filter(subsetgeneraldata, beewider=="true"))
 
-qr2 <- rq(subsetgeneraldatawiderbees$tongue_length.tongue ~ subsetgeneraldatawiderbees$depth+subsetgeneraldatawiderbees$site+subsetgeneraldatawiderbees$sampling_round, data=subsetgeneraldatawiderbees,  tau = qs)
+qr2 <- rq(subsetgeneraldatawiderbees$tongue_length.tongue ~ subsetgeneraldatawiderbees$depth*(subsetgeneraldatawiderbees$site+subsetgeneraldatawiderbees$sampling_round), data=subsetgeneraldatawiderbees,  tau = qs)
 coef(qr2)
 summary(qr2)
 
