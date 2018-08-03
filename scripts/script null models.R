@@ -28,8 +28,11 @@ randomize <- function(n){
   for(i in 1:n){
     tonguesampled <- sample(databees$tongue)
     databees$tonguesampled <- tonguesampled
+    depthsampled <- sample(dataflowers$depth)
+    dataflowers$depthsampled <- depthsampled
     datasampled <- alldata %>% left_join(databees, by=(c("bee")))
-    datasampled$differencesampled <- datasampled$tonguesampled-datasampled$depth
+    datasampled <- datasampled %>% left_join(dataflowers, by=(c("plant_gs")))
+    datasampled$differencesampled <- datasampled$tonguesampled-datasampled$depthsampled
     sumdifferences[i] <- sum((abs(datasampled$differencesampled))^2)
   }
   return(sumdifferences)
@@ -53,5 +56,5 @@ randomize2 <- function(n){
   return(sumdifferences)
 }
 
-hist(randomize2(1000))
+hist(randomize2(100))
 abline(v = sum((abs(alldata$difference)))^2)
