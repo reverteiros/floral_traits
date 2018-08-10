@@ -77,36 +77,50 @@ newmeasures <- dplyr::filter(maleIT, !is.na(measured)&abundance>measured&measure
 #table(newmeasures$measured)
 
 #### How many species are in the dataset?
-sum(table(maleIT$abundance)) # 166
+sum(table(maleIT$abundance)) # 165
 ### How many species do we have IT data?
 sum(table(maleIT$measured))  # 123
 
 
+
+############# Read new floral traits database
+newfloraltraits<-read.table("data/flowers.txt",header = T)
+
+group <- group_by(newfloraltraits, Species, Individual)
+flowersmeasured <- summarize(group, measured=n(),depth=mean(depth),width=mean(width))
+group <- group_by(flowersmeasured, Species)
+flowersmeasured <- summarize(group, measured=sum(measured),depth=mean(depth),width=mean(width))
+flowersmeasured <- summarize(group,depth=mean(depth),width=mean(width))
+
 ############# Read floral traits database
 floraltraits<-read.csv("data/floraltraits.csv")
+floraltraits <- data.frame(floraltraits$genus_species,floraltraits$depth,floraltraits$width)
+names(floraltraits) <- c("Species","depth","width")
 
-# create column with plant genus and species together
-male$genus_species <- paste(male$plant_genus, male$plant_species, sep = "_")
+## join two floral databases
+flowerstotal <- dplyr::bind_rows(floraltraits, flowersmeasured)
+names(flowerstotal) <- c("plant_gs","depth","width")
 
-group <- group_by(floraltraits, genus_species)
-flowersmeasured <- summarize(group, measured=n())
 
-group <- group_by(male, genus_species)
+## add the data to the bee dataset
+
+male$plant_gs <- paste(male$plant_genus,male$plant_species,sep="_")
+
+group <- group_by(male, plant_gs)
 michaeldata <- summarize(group, abundance=n())
-michaelflowers <- michaeldata %>% left_join(flowersmeasured, by=(c("genus_species")))
+michaelflowers <- michaeldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 
-#michaelflowers<-michaelflowers[michaelflowers$measured!="NA",]
 
 #### How many species are in the dataset?
-sum(table(michaelflowers$abundance)) # 113
+sum(table(michaelflowers$abundance)) # 111
 ### How many species do we have floral traits data?
-sum(table(michaelflowers$measured))  # 44
+sum(table(michaelflowers$depth))  # 53
 
 
-# Which species we lack data, and how many visits do they have
-flowersnodata <- michaeldata %>% anti_join(flowersmeasured, by=(c("genus_species")))
-# from which species do we have more than 80 visits and worth measuring
-dplyr::filter(flowersnodata, abundance > 80)
+# # Which species we lack data, and how many visits do they have
+# flowersnodata <- michaeldata %>% anti_join(flowersmeasured, by=(c("genus_species")))
+# # from which species do we have more than 80 visits and worth measuring
+# dplyr::filter(flowersnodata, abundance > 80)
 
 
 # #### bee head size
@@ -137,7 +151,7 @@ dplyr::filter(flowersnodata, abundance > 80)
 generaldata <- male %>% left_join(nITperbee, by=(c("bee")))
 
 # add flower traits
-generaldata <- generaldata %>% left_join(floraltraits, by=(c("genus_species")))
+generaldata <- generaldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 
 
 ## check family data
@@ -178,7 +192,7 @@ generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutsta
 
 ## drop unused plots and doubtful interactions
 
-generaldata <- droplevels(dplyr::filter(generaldata, !site=="Featherbed"& !site=="D&R Greenway" & !keep=="D" & !is.na(sampling_round)))
+generaldata <- droplevels(dplyr::filter(generaldata, !bee_sex == "M" & !site=="Featherbed"& !site=="D&R Greenway" & !keep=="D" & !is.na(sampling_round)))
 
 ### add bee families
 # traittab<-read.csv("data/wlab_db_5-31-18_3-21 PM_species_traits.csv")
