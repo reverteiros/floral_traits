@@ -213,4 +213,4 @@ datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
 #### How many bee species are in the dataset?
 sum(table(datameasures$abundance.x)) # 132
 ### How many species do we have IT data?
-sum(table(datameasures$measured))  # 126
+sum(table(datameasures$measured)) # 126
