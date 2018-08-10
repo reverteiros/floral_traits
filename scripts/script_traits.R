@@ -19,16 +19,23 @@ traits$sex <- droplevels(traits$sex)
 ## Variable IT distance is still a factor. Convert to numeric
 traits$ITlength_mm <- as.numeric(as.character(traits$ITlength_mm))
 
-## Create a table grouping per bee
-group <- group_by(traits, bee)
-## Calculate mean IT per each previous group
-nITperbee <- summarize(group, IT_mm=mean(ITlength_mm))
-
 # ## check intra-species variability in IT
 # nITperbee <- summarize(group, IT_mm=mean(ITlength_mm),CV=(sd(ITlength_mm)/mean(ITlength_mm)*100),n=n())
 # 
 # plot(nITperbee$CV~nITperbee$n,xlim=c(0,15))
 # plot(nITperbee$CV~nITperbee$n)
+
+
+#### read new bee its dataset
+newbeedata<-read.table("data/bee_its.txt",header = T)
+newbeedata$ITlength_mm <- as.numeric(as.character(newbeedata$ITlength_mm))
+
+traits <- dplyr::bind_rows(traits, newbeedata)
+
+## Create a table grouping per bee
+group <- group_by(traits, bee)
+## Calculate mean IT per each previous group
+nITperbee <- summarize(group, IT_mm=mean(ITlength_mm),n=n())
 
 
 ######### Read male bee dataset
@@ -62,24 +69,19 @@ male<-read.csv("data/2016_male_bee_dataset.csv")
 # 
 # sum(table(maleIT$measured)) #147
 
-## mow the same but not separing by sex
-## database of traits. separate by bee and sex
+## database of traits. separate by bee
 group1 <- group_by(traits, bee)
 nITperbee3 <- summarize(group1, measured=n())
 
-## database of michael separate by bee and sex
+## database of michael separate by bee
 group2 <- group_by(male, bee)
 michaeldata <- summarize(group2, abundance=n())
 maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
-# species that have measures but we will need to measure more individuals
-newmeasures <- dplyr::filter(maleIT, !is.na(measured)&abundance>measured&measured<10)
-#table(newmeasures$measured)
-
 #### How many species are in the dataset?
 sum(table(maleIT$abundance)) # 165
 ### How many species do we have IT data?
-sum(table(maleIT$measured))  # 123
+sum(table(maleIT$measured))  # 148
 
 
 
@@ -109,6 +111,7 @@ male$plant_gs <- paste(male$plant_genus,male$plant_species,sep="_")
 group <- group_by(male, plant_gs)
 michaeldata <- summarize(group, abundance=n())
 michaelflowers <- michaeldata %>% left_join(flowerstotal, by=(c("plant_gs")))
+
 
 
 #### How many species are in the dataset?
@@ -181,7 +184,7 @@ generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 
 
 #drop some yucky columns
-generaldata<-generaldata %>% select (-c("plant_code.x", "plant_species.x", "plant_genus.x", "plant_code.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
+generaldata<-generaldata %>% select (-c("plant_species.x", "plant_genus.x", "plant_code.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
 
 ## time variables
 
@@ -194,7 +197,20 @@ generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutsta
 
 generaldata <- droplevels(dplyr::filter(generaldata, !bee_sex == "M" & !site=="Featherbed"& !site=="D&R Greenway" & !keep=="D" & !is.na(sampling_round)))
 
-### add bee families
-# traittab<-read.csv("data/wlab_db_5-31-18_3-21 PM_species_traits.csv")
-# withfam<-left_join(generaldata, traittab %>% select(genus, species, Family), by=c("bee_genus"="genus","bee_species"="species" ))
-# 
+
+
+### we want to know, from the plant species studied, the number of bee species and their number of It measurements
+generaldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)))
+
+
+## database of traits. separate by bee
+group1 <- group_by(generaldata, bee)
+datareal <- summarize(group1, abundance=n())
+
+## database of michael separate by bee
+datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
+
+#### How many bee species are in the dataset?
+sum(table(datameasures$abundance.x)) # 132
+### How many species do we have IT data?
+sum(table(datameasures$measured))  # 126

@@ -2,6 +2,7 @@
 source("scripts/script_traits.R")
 
 library(ggplot2)
+library(directlabels)
 
 ## Define subsets of variables with appropriate names
 
@@ -16,13 +17,13 @@ subsetgeneraldata<-subsetgeneraldata %>% mutate(proboscislonger=if_else(tongue_l
 subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
 
-# ## data for histograms with species
-# histbeespecies<-subsetgeneraldata %>%
-#   group_by(bee) %>%
-#   summarize(tongue=mean(tongue_length.tongue), integertongue=mean(as.integer(tongue_length.tongue)),IT=mean(IT_improved),abundance=n())
-# histplantspecies<-subsetgeneraldata %>%
-#   group_by(plant_gs) %>%
-#   summarize(depth=mean(depth), width=mean(width), integerdepth=mean(as.integer(depth)),abundance=n())
+## data for histograms with species
+histbeespecies<-subsetgeneraldata %>%
+  group_by(bee) %>%
+  summarize(tongue=mean(tongue_length.tongue), integertongue=mean(as.integer(tongue_length.tongue)),IT=mean(IT_improved),abundance=n())
+histplantspecies<-subsetgeneraldata %>%
+  group_by(plant_gs) %>%
+  summarize(depth=mean(depth), width=mean(width), integerdepth=mean(as.integer(depth)),abundance=n())
 
 # ## data for bubble plots with interaction strength of each plant-pollinator interaction
 # interactionstrength<-subsetgeneraldata %>%
@@ -33,6 +34,8 @@ subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>wid
 ############ plots
 # rank-abundance plot of bee species
 barplot(sort(histbeespecies$abundance,decreasing=T))
+
+table(subsetgeneraldata$tongue_length.tongue)
 
 #all bees tongue length histogram
 hist(subsetgeneraldata$tongue_length.tongue, xlab="Tongue length (mm)",main="",breaks=seq(0, 14, by = 1))
@@ -111,6 +114,21 @@ subsetgeneraldata %>%
 # bubble plots with interaction strength of each plant-pollinator interaction
 symbols(interactionstrength$depth, interactionstrength$tongue, circles = sqrt(interactionstrength$abundance/pi), inches = 0.25, fg = "white", bg = "red", ylab=c("Proboscis length (mm)"),xlab=c("Flower depth (mm)"), main = "Sized by Interaction Strength")
 abline(a = 0, b = 1)#adding the 1-1 line
+
+
+#### Plot quantile regresssion. Labels not working don't know why
+ggplot(subsetgeneraldata, aes(y=tongue_length.tongue, x=depth)) + 
+  geom_jitter(alpha=0.1, height=0.1) + 
+  theme_classic() +
+  stat_quantile(quantiles=c(0.10),col="blue",size=1) + 
+  stat_quantile(quantiles=c(0.25),col="red",size=1) + 
+  stat_quantile(quantiles=c(0.50),col="orange",size=1) +
+  stat_quantile(quantiles=c(0.75),col="green",size=1) +
+  stat_quantile(quantiles=c(0.90),col="brown",size=1) +
+  scale_colour_manual(name = 'Quantiles', breaks = c('blue', 'red','orange','green','brown'), values = c('blue', 'red','orange','green','brown'), labels = c('0.1','0.25','0.5','0.75','0.9')) 
+
+
+
 
 # #### Plots comparing IT and width
 # # combining the histograms of IT and width
