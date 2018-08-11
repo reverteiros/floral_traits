@@ -144,7 +144,7 @@ probs <- c(0.1, 0.25, 0.5, 0.75, 0.9)
 dens <- density(subsetgeneraldata2$tongue_length.tongue)
 df <- data.frame(x=dens$x, y=dens$y)
 quantiles <- quantile(subsetgeneraldata2$tongue_length.tongue, prob=probs)
-df$quant <- factor(findInterval(df$x,quantiles))
+df$quant <- factor(findInterval(df$x,quantiles)) 
 ggplot(df, aes(x,y)) + geom_line() + geom_ribbon(aes(ymin=0, ymax=y, fill=quant)) + scale_x_continuous(breaks=quantiles) + scale_fill_brewer(guide="none")
 
 

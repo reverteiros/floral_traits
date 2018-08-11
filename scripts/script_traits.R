@@ -103,7 +103,6 @@ names(floraltraits) <- c("Species","depth","width")
 flowerstotal <- dplyr::bind_rows(floraltraits, flowersmeasured)
 names(flowerstotal) <- c("plant_gs","depth","width")
 
-
 ## add the data to the bee dataset
 
 male$plant_gs <- paste(male$plant_genus,male$plant_species,sep="_")
@@ -117,7 +116,7 @@ michaelflowers <- michaeldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 #### How many species are in the dataset?
 sum(table(michaelflowers$abundance)) # 111
 ### How many species do we have floral traits data?
-sum(table(michaelflowers$depth))  # 53
+sum(table(michaelflowers$depth))  # 54
 
 
 # # Which species we lack data, and how many visits do they have
