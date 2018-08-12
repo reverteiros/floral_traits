@@ -204,7 +204,7 @@ generaldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)))
 
 ## database of traits. separate by bee
 group1 <- group_by(generaldata, bee)
-datareal <- summarize(group1, abundance=n())
+datareal <- summarize(group1, abundance=n(), IT = mean(IT_mm),tongue=mean(tongue_length.tongue))
 
 ## database of michael separate by bee
 datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
