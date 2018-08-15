@@ -1,7 +1,7 @@
 
 require(devtools)
 library(BeeIT)
-library(plyr)
+# library(plyr)
 library(dplyr)
 library(lubridate)
 
@@ -185,7 +185,7 @@ generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 
 
 #drop some yucky columns
-generaldata<-generaldata %>% select (-c("plant_species.x", "plant_genus.x", "plant_code.y", "plant_species.y")) %>% rename("plant_gs"="genus_species")
+# generaldata<-generaldata %>% select %>% rename("plant_gs"="genus_species")
 
 ## time variables
 
