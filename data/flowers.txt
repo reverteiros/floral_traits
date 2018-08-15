@@ -302,3 +302,15 @@ Erechtites_hieraciifolius	3	3	0.74	11.34
 Erechtites_hieraciifolius	3	4	0.78	11.25
 Erechtites_hieraciifolius	3	5	0.75	11.13
 Erechtites_hieraciifolius	3	6	0.79	11.66
+Erechtites_hieraciifolius	4	1	0.76	13.18
+Erechtites_hieraciifolius	4	2	0.79	13.1
+Erechtites_hieraciifolius	4	3	0.87	12.86
+Erechtites_hieraciifolius	4	4	0.74	13.06
+Erechtites_hieraciifolius	4	5	0.8	13.46
+Erechtites_hieraciifolius	4	6	0.79	13.4
+Erechtites_hieraciifolius	5	1	0.76	13.1
+Erechtites_hieraciifolius	5	2	0.66	13.3
+Erechtites_hieraciifolius	5	3	0.81	13.28
+Erechtites_hieraciifolius	5	4	0.68	12.83
+Erechtites_hieraciifolius	5	5	0.81	13.68
+Erechtites_hieraciifolius	5	6	0.7	14.16

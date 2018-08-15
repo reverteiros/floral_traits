@@ -19,9 +19,18 @@ dataflowers<-alldata %>%
   group_by(plant_gs) %>%
   summarize(depth=mean(depth),abundance=n())
 
-
+# plot regression with null model and real data
 alldata$nullbees <- sample(databees$tongue, length(alldata$difference), replace = T, prob = databees$abundance)
 alldata$nullflower <- sample(dataflowers$depth, length(alldata$difference), replace = T, prob = dataflowers$abundance)
+
+ggplot(alldata, aes(y=nullbees, x=nullflower)) + 
+  geom_jitter(alpha=0.01, height=0.1) + 
+  theme_classic() #+
+
+ggplot(subsetgeneraldata, aes(y=tongue_length.tongue, x=depth)) + 
+  geom_jitter(alpha=0.01, height=0.1) + 
+  theme_classic() #+
+
 
 alldata <- alldata %>% mutate(nulldiff=nullflower-nullbees)
 
@@ -33,6 +42,7 @@ alldata %>%
   labs(x = "Differences between flower depth and tongue length (mm)")+
   annotate(geom = "text", x = 20, y = 4000, label = "Red = observed")+
   annotate(geom = "text", x = 20, y = 3800, label = "Grey = expected")
+
 
 ### filtering for the bees that have shorter proboscis than corolla (mismatching)
 
@@ -68,11 +78,13 @@ shorttonguedbees %>%
   annotate(geom = "text", x = 20, y = 2000, label = "Grey = expected")
 
 
+ggplot(subsetgeneraldata, aes(y=tongue_length.tongue, x=depth)) + 
+  geom_jitter(alpha=0.1, height=0.1) + 
+  theme_classic() #+
 
 
 
-
-
+## null model per site and sampling round
 
 
 baldpate1 <- dplyr::filter(alldata, beewider=="true" & sampling_round == "1" & site == "Baldpate")
