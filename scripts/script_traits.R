@@ -111,8 +111,6 @@ group <- group_by(male, plant_gs)
 michaeldata <- summarize(group, abundance=n())
 michaelflowers <- michaeldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 
-
-
 #### How many species are in the dataset?
 sum(table(michaelflowers$abundance)) # 111
 ### How many species do we have floral traits data?
@@ -151,6 +149,10 @@ sum(table(michaelflowers$depth))  # 54
 ################ create a final dataset for graphs
 # add IT
 generaldata <- male %>% left_join(nITperbee, by=(c("bee")))
+
+## lasioglossum hitchemsi-weemsi we say that has the same IT as l. mitchelli
+generaldata$IT_mm[which(generaldata$bee=="Lasioglossum_hitchensi_weemsi")]<-"1.0013641"
+generaldata$IT_mm <- as.numeric(generaldata$IT_mm)
 
 # add flower traits
 generaldata <- generaldata %>% left_join(flowerstotal, by=(c("plant_gs")))
@@ -212,4 +214,4 @@ datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
 #### How many bee species are in the dataset?
 sum(table(datameasures$abundance.x)) # 132
 ### How many species do we have IT data?
-sum(table(datameasures$measured)) # 126
+sum(table(datameasures$IT)) # 127
