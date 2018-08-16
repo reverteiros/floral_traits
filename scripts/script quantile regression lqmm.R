@@ -41,11 +41,26 @@ cl<-makeCluster(no_cores)
 clusterExport(cl=cl, varlist=ls())
 clusterEvalQ(cl, library(lqmm))
 QR1<-parLapply(cl, c(1:9), fun=function(x){
-  lqmm(fixed = tongue_length.tongue~depth, random = ~depth, group = sr, tau=c(x/10), data=dat,  control= list(method="df", LP_max_iter=100000))
+  lqmm(fixed = tongue_length.tongue~depth+depth^2+depth^3, random = ~1, group = sr, tau=c(x/10), data=dat,  control= list(method="df", LP_max_iter=100000))
 })
 stopCluster(cl)
 endtime<-Sys.time()-start_time
 endtime  
+
+plot(jitter(dat$depth, amount=0.35), jitter(dat$tongue_length.tongue, amount=0.1), pch=".", xlab="corolla depth", ylab="tongue length", xlim=c(0,30))
+
+start_time<-Sys.time()
+# no_cores<-detectCores()-1
+# cl<-makeCluster(no_cores)
+# clusterExport(cl=cl, varlist=ls())
+lapply(c(1,3,5,7,9), function(x){
+  points(dat$depth, predict(QR1[[x]], level=0), col=x+1, pch="*")
+})
+
+# stopCluster(cl)
+endtime<-Sys.time()-start_time
+endtime  
+
 
 # dat$sr<-as.factor(dat$sr)
 #Try additive model version, since most recent attempt to do lqmm led to lines crossing in range of data e.g. between quantiles 0.5 and 0.6. 
@@ -55,7 +70,7 @@ cl<-makeCluster(no_cores)
 clusterExport(cl=cl, varlist=ls())
 clusterEvalQ(cl, library(aqmm))
 aQR1<-parLapply(cl, c(1:9), fun=function(x){
-  aqmm(fixed = tongue_length.tongue~s(depth, bs="cs"), random=~1, group=sr, data=dat, tau=x/10)
+  aqmm(fixed = tongue_length.tongue~s(depth, k=9), random=~1, group=sr, data=dat, tau=x/10)
 })
 stopCluster(cl)
 endtime<-Sys.time()-start_time
@@ -67,20 +82,56 @@ cl<-makeCluster(no_cores)
 clusterExport(cl=cl, varlist=ls())
 clusterEvalQ(cl, library(aqmm))
 aQR2<-parLapply(cl, c(1:9), fun=function(x){
-  aqmm(fixed = tongue_length.tongue~s(depth, bs="cs"), random=~depth, group=sr, data=dat, tau=x/10)
+  aqmm(fixed = tongue_length.tongue~s(depth, k=5), random=~depth, group=sr, data=dat, tau=x/10)
 })
 stopCluster(cl)
 endtime<-Sys.time()-start_time
 endtime  
 
-plot(jitter(dat$depth, amount=0.35), jitter(dat$tongue_length.tongue, amount=0.1), pch=".", xlab="corolla depth", ylab="tongue length", xlim=c(0,20))
 
-lapply(c(1), function(x){
-  points(dat$depth, predict(aQR1[[x]], level="Lord Stirling 1"), col=2, type="l")
+# library(nlqmm)
+dat<-dat %>% mutate(sq=depth^2, cu=depth^3)
+
+start_time<-Sys.time()
+no_cores<-detectCores()-1
+cl<-makeCluster(no_cores)
+clusterExport(cl=cl, varlist=ls())
+clusterEvalQ(cl, library(lqmm))
+cubetest<-parLapply(cl, 1:9, function(x){
+#   lqmm(fixed=tongue_length.tongue~poly(depth, 3),random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
+# })
+  lqmm(fixed=tongue_length.tongue~poly(depth, 3, raw=TRUE),random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
+})
+ct2<-parLapply(cl, 1:9, function(x){
+  lqmm(fixed=tongue_length.tongue~depth+sq+cu,random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
+})
+stopCluster(cl)
+endtime<-Sys.time()-start_time
+endtime  
+
+
+ct3<-lqmm(fixed=tongue_length.tongue~depth+sq+cu,random=~depth+sq+cu, group=sr, data=dat, tau=0.5,control= list(method="df", LP_max_iter=100000))
+
+ct4<-lqmm(fixed=tongue_length.tongue~poly(depth,3),random=~poly(depth,3), group=sr, data=dat, tau=0.5,control= list(method="df", LP_max_iter=100000))
+
+plot(jitter(dat$depth, amount=0.35), jitter(dat$tongue_length.tongue, amount=0.1), pch=".", xlab="corolla depth", ylab="tongue length", xlim=c(0,33))
+colrs<-c("red", "darkred", "blue", "darkblue", "darkgreen", "orange", "purple", "lightblue", "grey")
+lapply(1:9, function(x){
+  points(dat$depth, predict(cubetest[[x]], level=0), col=colrs[x], pch="*")
 })
 
-dat$sr
 
+lapply(c(1,5,9), function(x){
+  points(dat$depth, predict(aQR2[[x]], level=0), col=colrs[x], pch="*")
+})
+
+lapply(c(2,4,6,8), function(x){
+  points(dat$depth, predict(aQR1[[x]], level=0), col=colrs[x], pch="*")
+})
+
+
+
+aqmm
 cl<-makeCluster(no_cores)
 clusterExport(cl=cl, varlist=ls())
 clusterEvalQ(cl, library(lqmm))
