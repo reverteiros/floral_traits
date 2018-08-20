@@ -2,7 +2,6 @@
 source("scripts/script_traits.R")
 
 library(ggplot2)
-library(directlabels)
 library(reshape2)
 
 ## Define subsets of variables with appropriate names
@@ -11,7 +10,7 @@ library(reshape2)
 subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth) & !Bombus=="N"))
 
 # New variable: difference between flower depth and proboscis length
-subsetgeneraldata$difference <- subsetgeneraldata$depth-subsetgeneraldata$tongue_length.tongue
+subsetgeneraldata$difference <- subsetgeneraldata$tongue_length.tongue-subsetgeneraldata$depth
 # Proboscis is logner than flower depth or not
 subsetgeneraldata<-subsetgeneraldata %>% mutate(proboscislonger=if_else(tongue_length.tongue>depth, "true", "false"))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(longuetongue=if_else(tongue_length.tongue>6, "true", "false"))
