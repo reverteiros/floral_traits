@@ -16,18 +16,21 @@ subsetgeneraldata$randomfactor <- paste(subsetgeneraldata$site, subsetgeneraldat
 
 ####
 #look at distribution of tongues and flowers across site-round
-
+pdf("figures/variation_by_siteround.pdf")
 subsetgeneraldata %>%mutate(sr=paste(site, sampling_round)) %>% 
   ggplot(aes(sampling_round, tongue_length.tongue))+
-  geom_boxplot()+geom_jitter(size=0.05)+
-  theme_classic()+facet_wrap(~site)
+  geom_boxplot()+
+  geom_jitter(size=0.1, alpha=0.3, width=.2, height=0.05, color="darkblue")+
+  theme_classic()+facet_wrap(~site)+
+  labs(y="tongue length")
 
 subsetgeneraldata %>%mutate(sr=paste(site, sampling_round)) %>% 
   ggplot(aes(sampling_round, depth))+
   geom_boxplot()+
-  geom_jitter(size=0.05)+
-  theme_classic()+facet_wrap(~site)
-
+  geom_jitter(size=0.1, alpha=0.3, width=.2, height=0.05, color="darkblue")+
+  theme_classic()+facet_wrap(~site)+
+  labs(y="corolla depths")
+dev.off()
 
 subsetgeneraldata<-subsetgeneraldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 subsetgeneraldata<-subsetgeneraldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
@@ -70,14 +73,14 @@ cl<-makeCluster(no_cores)
 clusterExport(cl=cl, varlist=ls())
 clusterEvalQ(cl, library(aqmm))
 aQR1<-parLapply(cl, c(1:9), fun=function(x){
-  aqmm(fixed = tongue_length.tongue~s(depth, k=9), random=~1, group=sr, data=dat, tau=x/10)
+  aqmm(fixed = tongue_length.tongue~s(depth, k=5), random=~1, group=sr, data=dat, tau=x/10)
 })
 stopCluster(cl)
 endtime<-Sys.time()-start_time
 endtime  
 
 start_time<-Sys.time()
-no_cores<-detectCores()-1
+no_cores<-detectCores()-5
 cl<-makeCluster(no_cores)
 clusterExport(cl=cl, varlist=ls())
 clusterEvalQ(cl, library(aqmm))
@@ -100,10 +103,7 @@ clusterEvalQ(cl, library(lqmm))
 cubetest<-parLapply(cl, 1:9, function(x){
 #   lqmm(fixed=tongue_length.tongue~poly(depth, 3),random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
 # })
-  lqmm(fixed=tongue_length.tongue~poly(depth, 3, raw=TRUE),random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
-})
-ct2<-parLapply(cl, 1:9, function(x){
-  lqmm(fixed=tongue_length.tongue~depth+sq+cu,random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
+  ct4<-lqmm(fixed=tongue_length.tongue~poly(depth,3),random=~poly(depth,3), group=sr, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
 })
 stopCluster(cl)
 endtime<-Sys.time()-start_time
@@ -112,13 +112,13 @@ endtime
 
 ct3<-lqmm(fixed=tongue_length.tongue~depth+sq+cu,random=~depth+sq+cu, group=sr, data=dat, tau=0.5,control= list(method="df", LP_max_iter=100000))
 
-ct4<-lqmm(fixed=tongue_length.tongue~poly(depth,3),random=~poly(depth,3), group=sr, data=dat, tau=0.5,control= list(method="df", LP_max_iter=100000))
+
 
 plot(jitter(dat$depth, amount=0.35), jitter(dat$tongue_length.tongue, amount=0.1), pch=".", xlab="corolla depth", ylab="tongue length", xlim=c(0,33))
 colrs<-c("red", "darkred", "blue", "darkblue", "darkgreen", "orange", "purple", "lightblue", "grey")
-lapply(1:9, function(x){
-  points(dat$depth, predict(cubetest[[x]], level=0), col=colrs[x], pch="*")
-})
+# lapply(1:9, function(x){
+#   points(dat$depth, predict(cubetest[[x]], level=0), col=colrs[x], pch="*")
+# })
 
 
 lapply(c(1,5,9), function(x){
@@ -126,10 +126,22 @@ lapply(c(1,5,9), function(x){
 })
 
 lapply(c(2,4,6,8), function(x){
-  points(dat$depth, predict(aQR1[[x]], level=0), col=colrs[x], pch="*")
+  points(dat$depth, predict(aQR2[[x]], level=0), col=colrs[x], pch="*")
 })
 
-
+start_time<-Sys.time()
+no_cores<-detectCores()-1
+cl<-makeCluster(no_cores)
+clusterExport(cl=cl, varlist=ls())
+clusterEvalQ(cl, library(lqmm))
+fourtest<-parLapply(cl, 1:9, function(x){
+  #   lqmm(fixed=tongue_length.tongue~poly(depth, 3),random=~1, group=sampling_round, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
+  # })
+  lqmm(fixed=tongue_length.tongue~poly(depth,4),random=~poly(depth,4), group=sr, data=dat, tau=x/10,control= list(method="df", LP_max_iter=100000))
+})
+stopCluster(cl)
+endtime<-Sys.time()-start_time
+endtime  
 
 aqmm
 cl<-makeCluster(no_cores)
