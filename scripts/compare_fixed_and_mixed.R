@@ -28,6 +28,8 @@ m4<-lm(mfd~tl, data=dat2)
 #fixed effects only, per-interaction
 m5<-lm(depth~tl, data=dat4)
 
+plot(m1)
+
 segm<-segmented(m4)
 seg2<-segmented(m3) #throws error
 seg3<-segmented(m5)
@@ -50,5 +52,25 @@ summary(m4)
 summary(m1)
 #estimates similar but LMM std errors on fixed effects greater
 
+bigbees<-(dat %>% group_by(bee) %>% summarize(abun=n()) %>% arrange(-abun))[1:12, "bee"]
+
+dat %>% filter(bee %in% bigbees$bee & sampling_round==3) %>% ggplot(aes(depth))+
+  # geom_histogram()+
+  geom_density()+
+  theme_classic()+
+  facet_wrap(~bee)
+
+dat %>% filter(bee =="Augochlora_pura") %>% ggplot(aes(depth))+
+  # geom_histogram()+
+  geom_density()+
+  theme_classic()+
+  facet_wrap(~site)
 
 
+
+
+
+m_orig<-lm(tl~depth, data=dat4)
+m_log<-lm(tl~log(depth+1), data=dat4)
+plot(m_orig)
+plot(m_log)
