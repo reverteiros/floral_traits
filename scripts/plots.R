@@ -1,5 +1,5 @@
 
-source("scripts/script_traits.R")
+source("scripts/traits.R")
 
 library(ggplot2)
 
