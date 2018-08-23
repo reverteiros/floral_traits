@@ -16,6 +16,9 @@ dat4<-left_join(dat, left_join(dat2, dat3))
 
 #mixed model with random slope and intercept for site and separately for round, flower depth as mean per bee-site-round combo
 m1<-lmer(mfd~tl+(tl|site)+(tl|sampling_round), data=dat2)
+m1a<-lmer(mfd~tl+(tl|site)+(tl|sampling_round)+(tl|site:sampling_round), data=dat2)
+anova(m1, m1a)
+
 #mixed model where flower depth on per-interaction basis
 m2<-lmer(depth~tl+(tl|site)+(tl|sampling_round), data=dat4)
 #fixed effects only, with flower dpeth as mean of all flowers visited by bee sp.
