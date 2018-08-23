@@ -1,6 +1,8 @@
 source("scripts/script_traits.R")
 library(tidyverse)
 library(lme4)
+library(segmented)
+
 subsetgeneraldata <- droplevels(dplyr::filter(generaldata, !is.na(depth) & !Bombus=="N"))
 dat<-subsetgeneraldata %>% mutate(sr=paste(site, sampling_round))
 dat<-dat %>% rename(tl=tongue_length.tongue)
@@ -23,7 +25,10 @@ m4<-lm(mfd~tl, data=dat2)
 #fixed effects only, per-interaction
 m5<-lm(depth~tl, data=dat4)
 
-
+segm<-segmented(m4)
+seg2<-segmented(m3)
+segm
+AIC(segm)
 AIC(m4)
 AIC(m1)
 #random effects win
