@@ -121,12 +121,8 @@ colrs<-c("red", "darkred", "blue", "darkblue", "darkgreen", "orange", "purple", 
 # })
 
 
-lapply(c(1,5,9), function(x){
-  points(dat$depth, predict(aQR2[[x]], level=0), col=colrs[x], pch="*")
-})
-
-lapply(c(2,4,6,8), function(x){
-  points(dat$depth, predict(aQR2[[x]], level=0), col=colrs[x], pch="*")
+lapply(1:9, function(x){
+  points(dat$depth, predict(fourtest[[x]], level=0), col=colrs[x], pch="*")
 })
 
 start_time<-Sys.time()
