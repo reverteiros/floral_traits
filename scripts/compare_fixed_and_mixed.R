@@ -26,15 +26,17 @@ m4<-lm(mfd~tl, data=dat2)
 m5<-lm(depth~tl, data=dat4)
 
 segm<-segmented(m4)
-seg2<-segmented(m3)
+seg2<-segmented(m3) #throws error
+seg3<-segmented(m5)
 segm
-AIC(segm)
+AIC(segm) #no better than linear without breakpoint
 AIC(m4)
 AIC(m1)
 #random effects win
 
-AIC(m2)
+AIC(m2) #best
 AIC(m5)
+AIC(seg3) #better than linear
 #random effects win
 
 summary(m2)
