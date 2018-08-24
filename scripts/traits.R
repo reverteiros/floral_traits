@@ -1,9 +1,7 @@
 
 require(devtools)
 library(BeeIT)
-# library(plyr)
-library(dplyr)
-library(lubridate)
+library(tidyverse)
 
 ############# Read IT database
 traits<-read.csv("data/wlab_db_5-31-18_3-21 PM_specimen_level_traits.csv")
@@ -14,6 +12,8 @@ traits$bee <- paste(traits$genus, traits$species, sep = "_")
 traits<-traits[traits$ITlength_mm!="NULL",]
 ## Clean sex data. There are many classes
 traits<-traits[-which(traits$sex == "unknown"|traits$sex == "NULL"),]
+#do we want to just use workers since that is the majority of the data? 
+# I think this is the right move. 
 traits$sex[which(traits$sex=="queen"|traits$sex=="worker")]<-"female"
 traits$sex <- droplevels(traits$sex)
 ## Variable IT distance is still a factor. Convert to numeric
@@ -33,9 +33,9 @@ newbeedata$ITlength_mm <- as.numeric(as.character(newbeedata$ITlength_mm))
 traits <- dplyr::bind_rows(traits, newbeedata)
 
 ## Create a table grouping per bee
-group <- group_by(traits, bee)
+ 
 ## Calculate mean IT per each previous group
-nITperbee <- summarize(group, IT_mm=mean(ITlength_mm),n=n())
+nITperbee <- group_by(traits, bee) %>% summarize(IT_mm=mean(ITlength_mm),n=n())
 
 
 ######### Read male bee dataset
@@ -70,8 +70,7 @@ male<-read.csv("data/2016_male_bee_dataset.csv")
 # sum(table(maleIT$measured)) #147
 
 ## database of traits. separate by bee
-group1 <- group_by(traits, bee)
-nITperbee3 <- summarize(group1, measured=n())
+nITperbee3 <- group_by(traits, bee) %>% summarize(measured=n())
 
 ## database of michael separate by bee
 group2 <- group_by(male, bee)
@@ -87,11 +86,8 @@ sum(table(maleIT$measured))  # 148
 
 ############# Read new floral traits database
 newfloraltraits<-read.table("data/flowers.txt",header = T)
-
-group <- group_by(newfloraltraits, Species, Individual)
-flowersmeasured <- summarize(group, measured=n(),depth=mean(depth),width=mean(width))
 group <- group_by(flowersmeasured, Species)
-flowersmeasured <- summarize(group, measured=sum(measured),depth=mean(depth),width=mean(width))
+
 flowersmeasured <- summarize(group,depth=mean(depth),width=mean(width))
 
 ############# Read floral traits database
@@ -194,9 +190,9 @@ generaldata$boutend= as.POSIXct(strptime(generaldata$boutend, format="%Y-%m-%d %
 
 generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutstart, boutend), na.rm=T))
 
-## drop unused plots and doubtful interactions
+## drop unused plots, all male bees, and doubtful interactions
 
-generaldata <- droplevels(dplyr::filter(generaldata, !bee_sex == "M" & !site=="Featherbed"& !site=="D&R Greenway" & !keep=="D" & !is.na(sampling_round)))
+generaldata <- droplevels(dplyr::filter(generaldata, bee_sex != "M" & site!="Featherbed"& site!="D&R Greenway" & keep!="D" & !is.na(sampling_round)))
 
 
 
@@ -215,3 +211,6 @@ datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
 sum(table(datameasures$abundance.x)) # 132
 ### How many species do we have IT data?
 sum(table(datameasures$IT)) # 127
+
+# write.csv(generaldata, "data/bees_and_traits.csv", row.names=F)
+
