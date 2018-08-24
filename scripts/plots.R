@@ -50,7 +50,7 @@ hist(subsetgeneraldata$difference, xlab="Tongue length - flower depth (mm)",main
 #this looks impressively balanced around 0! What is null i.e. totally random visits? 
 
 
-#### Plot quantile regresssion. Labels not working don't know why
+#### Plot quantile regresssion
 ggplot(subsetgeneraldata, aes(y=tongue_length.tongue, x=depth)) + 
   geom_jitter(alpha=0.1, height=0.1) + 
   theme_classic() 
