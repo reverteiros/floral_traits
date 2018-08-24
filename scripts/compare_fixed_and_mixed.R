@@ -1,4 +1,4 @@
-source("scripts/script_traits.R")
+source("scripts/traits.R")
 library(tidyverse)
 library(lme4)
 library(segmented)
