@@ -9,6 +9,8 @@ dat<-dat %>% rename(tl=tongue_length.tongue)
 
 #with flower depth summarized at bee, site, round
 dat2<- dat %>% group_by(bee, site, sampling_round, tl) %>% summarize(mfd=mean(depth))
+
+meanofmeans<-dat2 %>% group_by(bee, tl) %>% summarize(mom=mean(mfd))
 #summarized at bee species, combining visits from all site-rounds
 dat3<-dat %>% group_by(bee, tl) %>% summarize(gmfd=mean(depth))
 #D.F. With all values for weighting, not used. 
@@ -19,6 +21,11 @@ m1<-lmer(mfd~tl+(tl|site)+(tl|sampling_round), data=dat2)
 m1a<-lmer(mfd~tl+(tl|site)+(tl|sampling_round)+(tl|site:sampling_round), data=dat2)
 anova(m1, m1a)
 
+
+mommod<-lm(mom~tl, data=meanofmeans)
+
+summary(mommod)
+summary(m3)
 #mixed model where flower depth on per-interaction basis
 m2<-lmer(depth~tl+(tl|site)+(tl|sampling_round), data=dat4)
 #fixed effects only, with flower dpeth as mean of all flowers visited by bee sp.
