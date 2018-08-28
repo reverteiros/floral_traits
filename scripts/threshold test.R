@@ -1,0 +1,67 @@
+
+source("scripts/traits.R")
+
+library(ggplot2)
+library(purrr)
+
+# read and manipulate data
+alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
+alldata$difference <- alldata$depth-alldata$tongue_length.tongue
+
+### create objects at the species level, with abundance, and mean traits (subset bee species with more than 5 individuals collected to avoid species with high errors due to small size)
+databees<-alldata %>%
+  group_by(bee) %>%
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
+  dplyr::filter(., abundance > 5)
+
+dataflowers<-alldata %>%
+  group_by(plant_gs) %>%
+  summarize(depth=mean(depth),abundance=n())
+
+filtered <- dplyr::inner_join(alldata,databees, by = "bee")
+filtered <- filtered[order(filtered$bee),] 
+
+## Create matrix to insert null models. 999 runs of the null model, so matrix dimensions 14201*1000 (include a column for bee tongue length)
+datamatrix <- matrix(ncol = 1000,nrow = sum(databees$abundance))
+datamatrix <- as.data.frame(datamatrix)
+
+for(i in 1:999){
+  species <- lapply(1:length(databees$bee),function(x){
+    a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
+    b <- a - databees$tongue[x]
+    return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
+  })
+  k <- map_dfr(species,rbind)
+  datamatrix[,i] <- (k$b)
+}
+
+datamatrix$tongue <- (k$tongue)
+
+# Check the model works well
+hist(datamatrix[,656])
+plot(datamatrix$tongue, datamatrix[,646])
+
+# Add variables to dataset
+k <- dplyr::left_join(k,databees,"tongue")
+datamatrix$bee <- k$bee
+datamatrix$difference <- filtered$difference
+
+# Ask for the proportion of cells in each iteration in the null model and for each bee species in which the difference between flower and tongue favours the flower (is positive)
+datamatrixtable <- datamatrix %>%
+  group_by(bee) %>%
+  summarize_all(function(x){(mean(x>0))})
+
+# Mean and SD of the null models
+datamatrixtable$mean <- apply(datamatrixtable[,2:1000],1,FUN=mean)
+datamatrixtable$sd <- apply(datamatrixtable[,2:1000],1,FUN=sd)
+datamatrixtable <- dplyr::left_join(datamatrixtable,databees,"bee")
+
+# Plot graph with means of proportion of flowers longer than tongues derived from null model with error bars and real data
+datamatrixtable %>%
+  ggplot(aes(x=tongue))+
+  geom_point(aes(y=mean)) +
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), colour="black", width=.1) +
+  geom_point(aes(y=difference),col="red") +
+  # geom_smooth(aes(y=realpositive),col="red") +
+  labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+  theme_classic()
