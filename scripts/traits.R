@@ -86,7 +86,7 @@ sum(table(maleIT$measured))  # 148
 
 ############# Read new floral traits database
 newfloraltraits<-read.table("data/flowers.txt",header = T)
-group <- group_by(flowersmeasured, Species)
+group <- group_by(newfloraltraits, Species)
 
 flowersmeasured <- summarize(group,depth=mean(depth),width=mean(width))
 
