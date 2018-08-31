@@ -19,6 +19,7 @@ dat4<-left_join(dat, left_join(dat2, dat3))
 #mixed model with random slope and intercept for site and separately for round, flower depth as mean per bee-site-round combo
 m1<-lmer(mfd~tl+(tl|site)+(tl|sampling_round), data=dat2)
 m1a<-lmer(mfd~tl+(tl|site)+(tl|sampling_round)+(tl|site:sampling_round), data=dat2)
+m1c<-glmer(mfd~tl+(tl|site)+(tl|sampling_round)+(tl|site:sampling_round), data=dat2, family="poisson")
 anova(m1, m1a)
 
 
@@ -34,6 +35,11 @@ m3<-lm(gmfd~tl, data=dat3)
 m4<-lm(mfd~tl, data=dat2)
 #fixed effects only, per-interaction
 m5<-lm(depth~tl, data=dat4)
+
+pr<-lm(depth~tl, data=dat)
+spr<-segmented(pr)
+AIC(pr)
+AIC(spr)
 
 plot(m1)
 

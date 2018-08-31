@@ -34,9 +34,9 @@ d <- lapply(1:length(levels(alldata$site)),function(s) {
       # alldatasite <- alldata%>%filter(site==levels(alldata$site)[s])
       # flowerssite <- dataflowers%>%filter(site==levels(dataflowers$site)[s])
       # beesite <- databees%>%filter(site==levels(databees$site)[s])
-      alldataround <- alldatasite%>%filter(sampling_round==unique(alldatasite$sampling_round)[r]&site==levels(alldata$site)[s] )
-      flowersround <- flowerssite%>%filter(sampling_round==unique(flowerssite$sampling_round)[r]&site==levels(dataflowers$site)[s])
-      beesround <- beesite%>%filter(sampling_round==unique(beesite$sampling_round)[r]&site==levels(databees$site)[s])
+      alldataround <- alldata%>%filter(sampling_round==unique(alldata$sampling_round)[r]&site==levels(alldata$site)[s] )
+      flowersround <- dataflowers%>%filter(sampling_round==unique(dataflowers$sampling_round)[r]&site==levels(dataflowers$site)[s])
+      beesround <- databees%>%filter(sampling_round==unique(databees$sampling_round)[r]&site==levels(databees$site)[s])
       lapply(1:length(unique(beesround$bee)),function(b){
         alldatabee <- alldataround%>%filter(bee==unique(alldataround$bee)[b]) %>% droplevels()
         beesbee <- beesround%>%filter(bee==unique(beesround$bee)[b])
