@@ -22,10 +22,11 @@ filtered <- dplyr::inner_join(alldata,databees, by = "bee")
 filtered <- filtered[order(filtered$bee),] 
 
 ## Create matrix to insert null models. 999 runs of the null model, so matrix dimensions 14201*1000 (include a column for bee tongue length)
-datamatrix <- matrix(ncol = 1000,nrow = sum(databees$abundance))
+iterations <- 999
+datamatrix <- matrix(ncol = (iterations+1),nrow = sum(databees$abundance))
 datamatrix <- as.data.frame(datamatrix)
 
-for(i in 1:999){
+for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
     b <- a - databees$tongue[x]
@@ -38,8 +39,8 @@ for(i in 1:999){
 datamatrix$tongue <- (k$tongue)
 
 # Check the model works well
-hist(datamatrix[,656])
-plot(datamatrix$tongue, datamatrix[,646])
+# hist(datamatrix[,656])
+# plot(datamatrix$tongue, datamatrix[,646])
 
 # Add variables to dataset
 k <- dplyr::left_join(k,databees,"tongue")
@@ -52,8 +53,8 @@ datamatrixtable <- datamatrix %>%
   summarize_all(function(x){(mean(x>0))})
 
 # Mean and SD of the null models
-datamatrixtable$mean <- apply(datamatrixtable[,2:1000],1,FUN=mean)
-datamatrixtable$sd <- apply(datamatrixtable[,2:1000],1,FUN=sd)
+datamatrixtable$mean <- apply(datamatrixtable[,2:(iterations+1)],1,FUN=mean)
+datamatrixtable$sd <- apply(datamatrixtable[,2:(iterations+1)],1,FUN=sd)
 datamatrixtable <- dplyr::left_join(datamatrixtable,databees,"bee")
 
 # Plot graph with means of proportion of flowers longer than tongues derived from null model with error bars and real data
@@ -62,6 +63,7 @@ datamatrixtable %>%
   geom_point(aes(y=mean)) +
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), colour="black", width=.1) +
   geom_point(aes(y=difference),col="red") +
-  # geom_smooth(aes(y=realpositive),col="red") +
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
   theme_classic()
+
+# sometimes the plot gives error, run the previous line and the plot again and is fine
