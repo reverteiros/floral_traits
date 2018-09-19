@@ -6,7 +6,7 @@ library(purrr)
 
 # read and manipulate data
 alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
-alldata$difference <- alldata$depth-alldata$tongue_length.tongue
+alldata$difference <- alldata$tongue_length.tongue-alldata$depth
 
 ### create objects at the species level, with abundance, and mean traits (subset bee species with more than 5 individuals collected to avoid species with high errors due to small size)
 databees<-alldata %>%
@@ -23,13 +23,13 @@ filtered <- filtered[order(filtered$bee),]
 
 ## Create matrix to insert null models. 999 runs of the null model, so matrix dimensions 14201*1000 (include a column for bee tongue length)
 iterations <- 999
-datamatrix <- matrix(ncol = (iterations+1),nrow = sum(databees$abundance))
+datamatrix <- matrix(ncol = (iterations),nrow = sum(databees$abundance))
 datamatrix <- as.data.frame(datamatrix)
 
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- a - databees$tongue[x]
+    b <- databees$tongue[x] - a
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -46,42 +46,23 @@ datamatrix$tongue <- (k$tongue)
 k <- dplyr::left_join(k,databees,"tongue")
 datamatrix$bee <- k$bee
 datamatrix$difference <- filtered$difference
+datamatrix$plant_gs <- filtered$plant_gs
+datamatrix$depth <- filtered$depth
 
-# Mean and SD of the null models
-datamatrix$mean <- apply(datamatrix[,1:(iterations)],1,FUN=mean)
-datamatrix$sd <- apply(datamatrix[,1:(iterations)],1,FUN=sd)
-
-resumdataframe <- data.frame(datamatrix$mean,datamatrix$sd,datamatrix$difference,datamatrix$tongue,datamatrix$bee)
-names(resumdataframe) <- c("mean","sd","difference","tongue","bee")
-
-resumdataframe <- resumdataframe %>% mutate(UB=mean+2*sd,LB=mean-2*sd)
-resumdataframe <- resumdataframe %>% mutate(significant=if_else(difference > UB | difference < LB, TRUE, FALSE))
-
-table(resumdataframe$significant)
-
-traits<-resumdataframe %>%
-  group_by(bee,significant,tongue) %>%
-  summarize(abundance=n())
-
-traits <- traits%>%tidyr::spread(significant, abundance)
-
-names(traits) <- c("bee","tongue","fal","tru")
-
-traits$bee <- factor(traits$bee, levels = traits$bee[order(traits$tongue)])
+table(datamatrix$depth)
 
 
+c <- numeric(999)
+for(i in 1:999){
+  c[i] <- datamatrix[1005,i]
+}
 
-traits <- traits%>%mutate(percent=(tru/(fal+tru)))
+hist(c)
+abline(v=datamatrix[1005,1000])
 
-traits$percent[which(is.na(traits$percent))]<-"0"
+datamatrix[105,1000]
 
-traits$percent <- as.numeric(as.character(traits$percent))
-
-traits %>% ggplot(aes(bee, percent)) +
-  geom_bar(stat = "identity") 
-
-traits %>% ggplot(aes(tongue, percent)) +
-  geom_point() 
-
+table(datamatrix$depth)
+quantile(c, probs = c(0.025,0.999))
 
 
