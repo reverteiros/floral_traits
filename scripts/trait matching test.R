@@ -49,8 +49,6 @@ datamatrix$difference <- filtered$difference
 datamatrix$plant_gs <- filtered$plant_gs
 datamatrix$depth <- filtered$depth
 
-table(datamatrix$depth)
-
 
 c <- numeric(999)
 for(i in 1:999){
@@ -59,10 +57,4 @@ for(i in 1:999){
 
 hist(c)
 abline(v=datamatrix[1005,1000])
-
-datamatrix[105,1000]
-
-table(datamatrix$depth)
-quantile(c, probs = c(0.025,0.999))
-
 
