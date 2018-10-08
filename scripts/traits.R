@@ -164,9 +164,11 @@ generaldata$bee_family[generaldata$bee_genus=="Nomada"]<-"Apidae"
 generaldata$bee_family[generaldata$bee_genus=="Lasioglossum"]<-"Halictidae"
 generaldata$bee_family[generaldata$bee_genus=="Hylaeus"]<-"Colletidae"
 generaldata$bee_family[generaldata$bee_genus=="Dufouria"]<-"Halictidae"
+generaldata$bee_family[generaldata$bee_genus=="Coelioxys"]<-"Megachilidae"
+
 
 # remove other bugs
-generaldata<-generaldata[-which(generaldata$bee_genus == "sand wasp"|generaldata$bee_genus == "Anacrabro"),]
+generaldata<-generaldata[-which(generaldata$bee_genus == "Anacrabro"),]
 
 #I think all bees have families now
 generaldata[is.na(generaldata$bee_family),]
@@ -208,9 +210,9 @@ datareal <- summarize(group1, abundance=n(), IT = mean(IT_mm),tongue=mean(tongue
 datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
 
 #### How many bee species are in the dataset?
-sum(table(datameasures$abundance.x)) # 132
+sum(table(datameasures$abundance.x)) # 130
 ### How many species do we have IT data?
-sum(table(datameasures$IT)) # 127
+sum(table(datameasures$IT)) # 123
 
 # write.csv(generaldata, "data/bees_and_traits.csv", row.names=F)
 

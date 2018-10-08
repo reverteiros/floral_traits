@@ -50,11 +50,42 @@ datamatrix$plant_gs <- filtered$plant_gs
 datamatrix$depth <- filtered$depth
 
 
-c <- numeric(999)
-for(i in 1:999){
-  c[i] <- datamatrix[1005,i]
+means <- numeric(1000)
+sds <- numeric(1000)
+means[1000] <- mean(datamatrix[,1002])
+sds[1000] <- sd(datamatrix[,1002])
+
+for(i in 1:iterations){
+  means[i] <- mean(datamatrix[,i])
+  sds[i] <- sd(datamatrix[,i])
 }
 
-hist(c)
-abline(v=datamatrix[1005,1000])
+hist(means[1:999])
+abline(v=means[1000])
+hist(sds[1:999])
+abline(v=sds[1000])
+## mean is in the random distribution, but observed sd is very different than random sds.
+## observed sd is way smaller than random, indicating some trait matching.
 
+
+## do it for each bee species, to see if some tongues trait match more
+databytongue<-datamatrix[order(datamatrix$bee),] 
+databytongue$bee <- factor(databytongue$bee)
+databytongue$beenumeric <- as.numeric(directions.factor)
+
+table(databytongue$beenumeric)
+
+datamatrix2 <- matrix(ncol = 3,nrow = 77)
+datamatrix2 <- as.data.frame(datamatrix2)
+names(datamatrix2) <- c("bee","mean","sd")
+datamatrix2$bee <- unique(databytongue$bee)
+
+
+for(i in 1:77){
+  filtre <- dplyr::filter(databytongue, beenumeric == i)
+  datamatrix2[i,2] <- mean(filtre[1:nrow(filtre),1:999])
+  datamatrix2[i,3] <- sd(filtre[1:nrow(filtre),1:999])
+}
+
+
+ 
