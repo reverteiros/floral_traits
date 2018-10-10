@@ -8,6 +8,21 @@ library(purrr)
 alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
 alldata$difference <- alldata$tongue_length.tongue-alldata$depth
 
+
+# Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
+alldata<-alldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72)) %>% mutate(beewider=if_else(IT_improved>width, "true", "false")) 
+
+
+######## Choose one of the following options: 
+## Assume differences of 0 for small bees that can crawl in
+alldata <- alldata%>% 
+  mutate(newdifference=if_else(beewider== "true", difference, 0))
+
+## Eliminate small bees that can crawl in
+alldata <- alldata %>% 
+  dplyr::filter(., beewider== "true")
+
+
 ### create objects at the species level, with abundance, and mean traits (subset bee species with more than 5 individuals collected to avoid species with high errors due to small size)
 databees<-alldata %>%
   group_by(bee) %>%
@@ -50,11 +65,94 @@ datamatrix$plant_gs <- filtered$plant_gs
 datamatrix$depth <- filtered$depth
 
 
-c <- numeric(999)
-for(i in 1:999){
-  c[i] <- datamatrix[1005,i]
+means <- numeric(1000)
+sds <- numeric(1000)
+means[1000] <- mean(datamatrix[,1002])
+sds[1000] <- sd(datamatrix[,1002])
+
+for(i in 1:iterations){
+  means[i] <- mean(datamatrix[,i])
+  sds[i] <- sd(datamatrix[,i])
 }
 
-hist(c)
-abline(v=datamatrix[1005,1000])
+hist(means[1:999])
+abline(v=means[1000])
+hist(sds[1:999])
+abline(v=sds[1000])
+## mean is in the random distribution, but observed sd is very different than random sds.
+## observed sd is way smaller than random, indicating some trait matching.
 
+
+## do it for each bee species, to see if some tongues trait match more
+databytongue<-datamatrix[order(datamatrix$bee),] 
+databytongue$bee <- factor(databytongue$bee)
+databytongue$beenumeric <- as.numeric(databytongue$bee)
+
+observed<-databytongue %>%
+  group_by(bee) %>%
+  summarize(mean_obs=mean(difference),sd_obs=sd(difference),abundance=n())
+
+observed <- dplyr::left_join(observed, databees,by=c("bee","abundance"))
+
+
+########### MEANS
+meanpersp <- matrix(ncol = 999,nrow = 77)
+meanpersp <- as.data.frame(meanpersp)
+
+for(i in 1:77){
+  filtre <- dplyr::filter(databytongue, beenumeric == i)
+  filtre2 <- filtre[,1:999]
+  meanpersp[i,] <- apply(filtre2,2,mean)
+  
+}
+
+meanpersp$bee <- unique(databytongue$bee)
+
+
+# Mean,  and quantiles of the null models
+meanpersp$quantile975 <- apply(meanpersp[,1:999],1,quantile,probs=c(.975))
+meanpersp$quantile25 <- apply(meanpersp[,1:999],1,quantile,probs=c(.025))
+
+# when we did summary we had a column of tongues, but it turned to ones. Remove and insert again
+datamatrixtable <- dplyr::left_join(meanpersp,observed,"bee")
+
+# Plot graph with means of proportion of flowers longer than tongues derived from null model with error bars and real data
+datamatrixtable %>%
+  ggplot(aes(x=tongue))+
+  geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
+  geom_point(aes(y=mean_obs),col="red") +
+  labs(y="Mean difference per bee sp (mm)",x="Bee tongue length (mm)") +
+  theme_classic()
+# sometimes the plot gives error, run the previous line and the plot again and is fine
+
+
+
+########### SD
+sdpersp <- matrix(ncol = 999,nrow = 77)
+sdpersp <- as.data.frame(sdpersp)
+
+for(i in 1:77){
+  filtre <- dplyr::filter(databytongue, beenumeric == i)
+  filtre2 <- filtre[,1:999]
+  sdpersp[i,] <- apply(filtre2,2,sd)
+  
+}
+
+sdpersp$bee <- unique(databytongue$bee)
+
+
+# Mean,  and quantiles of the null models
+sdpersp$quantile975 <- apply(sdpersp[,1:999],1,quantile,probs=c(.975))
+sdpersp$quantile25 <- apply(sdpersp[,1:999],1,quantile,probs=c(.025))
+
+# when we did summary we had a column of tongues, but it turned to ones. Remove and insert again
+datamatrixtable <- dplyr::left_join(sdpersp,observed,"bee")
+
+# Plot graph with means of proportion of flowers longer than tongues derived from null model with error bars and real data
+datamatrixtable %>%
+  ggplot(aes(x=tongue))+
+  # geom_point(aes(y=sd)) +
+  geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
+  geom_point(aes(y=sd_obs),col="red") +
+  labs(y="SD difference per bee sp (mm)",x="Bee tongue length (mm)") +
+  theme_classic()

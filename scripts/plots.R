@@ -2,6 +2,7 @@
 source("scripts/traits.R")
 
 library(ggplot2)
+library(ggExtra)
 
 ## Define subsets of variables with appropriate names
 
@@ -107,6 +108,17 @@ dat %>% group_by(plant_gs, sr, depth) %>% summarize(mtl=mean(tongue_length.tongu
   ylim(c(0,16))+
   geom_smooth()+
   labs(x="flower depth", y="average tongue length of bees visiting")
+
+
+
+
+#### Plot tongue vs depth with histograms at margins
+g <- ggplot(subsetgeneraldata, aes(y=tongue_length.tongue, x=depth)) + 
+  geom_jitter(alpha=0.1, height=0.1) + 
+  theme_classic() +
+  labs(x="Flower depth (mm)", y="Bee tongue length (mm)")
+
+ggMarginal(g, type = "histogram", fill="transparent")
 
 
 
