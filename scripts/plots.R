@@ -113,10 +113,10 @@ dat %>% group_by(plant_gs, sr, depth) %>% summarize(mtl=mean(tongue_length.tongu
 
 
 #### Plot tongue vs depth with histograms at margins
-g <- ggplot(subsetgeneraldata, aes(y=tongue_length.tongue, x=depth)) + 
+g <- ggplot(subsetgeneraldata, aes(y=depth, x=tongue_length.tongue)) + 
   geom_jitter(alpha=0.1, height=0.1) + 
   theme_classic() +
-  labs(x="Flower depth (mm)", y="Bee tongue length (mm)")
+  labs(y="Flower depth (mm)", x="Bee tongue length (mm)")
 
 ggMarginal(g, type = "histogram", fill="transparent")
 
