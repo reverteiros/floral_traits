@@ -9,16 +9,20 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# RareBeePaper_2018
-Updated RareBeePaper Repo.
+# floral_traits
+Repository for data and scripts for the tongue and flower MS Roswell, Reverte-Saiz, et al. 
 
 #scripts not currently working and put into archive
 
 'differences between null models.R'
 
-	
+#scripts in use for MS or exploration
+*`null model trait matching.R`* generates histograms of difference between tongue and flower depth on a per-visit basis, comparing permutation null to observed by superimposing
+
+### from here on this is all from the other repository and needs to be copied for ours
+
 ##Workflow
-1. *getRare.R* pulls SQL  produces **allbee.csv**, **traits.csv**  and **specimens.csv**
+1. pulls SQL  produces **allbee.csv**, **traits.csv**  and **specimens.csv**
 2. *designate_Rare.R* designates rarity for CIG species produces **bees_designated_all.csv** and **bees_designated_cig.csv**
 3. *cig_aggregate.R* tabulates abundance and richness for each quartile for each site/treatment. produces **cig_for.analysis.csv**
 
