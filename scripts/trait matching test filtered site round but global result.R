@@ -1412,9 +1412,10 @@ ggplot(datamatrixsd, aes(y=sd_obs, x=tongue)) +
 
 
 #### Plot mean difference vs SD per each bee species 
-ggplot(observed, aes(y=mean_obs, x=sd_obs)) + 
+observed %>% mutate(absdif=abs(mean_obs)) %>% ggplot(aes(x=absdif, y=sd_obs)) + 
   geom_jitter(height=0.1) + 
-  theme_classic() + coord_flip() +
+  theme_classic()+
+  geom_smooth(method=lm)+
   labs(y="Mean difference (tongue length minus flower depth, mm)", x="SD difference (mm)")
 
 
