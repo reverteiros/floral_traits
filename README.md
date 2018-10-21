@@ -19,6 +19,8 @@ Repository for data and scripts for the tongue and flower MS Roswell, Reverte-Sa
 #scripts in use for MS or exploration
 *`null model trait matching.R`* generates histograms of difference between tongue and flower depth on a per-visit basis, comparing permutation null to observed by superimposing
 
+*`trait matching test filtered site round`* hard codes each site and round, and then for each bee spp. determines which flowers it could have visited (I think). Then it uses those flowers to generate null models for the difference between tongue length and the corolla depth. 
+
 ### from here on this is all from the other repository and needs to be copied for ours
 
 ##Workflow

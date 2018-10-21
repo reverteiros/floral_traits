@@ -1291,7 +1291,7 @@ datamatrixtable65 <- dplyr::mutate(datamatrix, site="URWA",round="5")
 
 datatotal <- dplyr::bind_rows(datamatrixtable11, datamatrixtable12, datamatrixtable13, datamatrixtable14, datamatrixtable15, datamatrixtable21, datamatrixtable22, datamatrixtable23, datamatrixtable24, datamatrixtable25, datamatrixtable31, datamatrixtable32, datamatrixtable33, datamatrixtable34, datamatrixtable35, datamatrixtable41, datamatrixtable42, datamatrixtable43, datamatrixtable44, datamatrixtable45, datamatrixtable51, datamatrixtable52, datamatrixtable53, datamatrixtable54, datamatrixtable55, datamatrixtable61, datamatrixtable62, datamatrixtable63, datamatrixtable64, datamatrixtable65)
 
-# Filtre species that appear less than 5 times
+# Filter species that appear less than 5 times
 datatotalbees<-datatotal %>%
   group_by(bee) %>%
   summarize(abundance=n()) %>%
@@ -1305,7 +1305,7 @@ datatotal <- dplyr::inner_join(datatotal, datatotalbees, by = "bee")
 ####(approach similar to Sazatornil et al 2016)
 means <- numeric(iterations+1)
 sds <- numeric(iterations+1)
-means[iterations+1] <- mean(datatotal[,(iterations+3)])#add observed value
+means[iterations+1] <- mean(abs(datatotal[,(iterations+3)]))#add observed value
 sds[iterations+1] <- sd(datatotal[,(iterations+3)])#add observed value
 
 # generate means and sd of each entire null network, 999 replicates
