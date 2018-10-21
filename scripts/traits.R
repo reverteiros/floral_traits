@@ -78,9 +78,9 @@ michaeldata <- summarize(group2, abundance=n())
 maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
 #### How many species are in the dataset?
-sum(table(maleIT$abundance)) # 165
+sum(table(maleIT$abundance)) # 160
 ### How many species do we have IT data?
-sum(table(maleIT$measured))  # 148
+sum(table(maleIT$measured))  # 143
 
 
 
@@ -155,8 +155,6 @@ generaldata <- generaldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 
 
 ## check family data
-beeswithoutfamily <- dplyr::filter(generaldata, is.na(bee_family))
-table(droplevels(beeswithoutfamily$bee_genus))
 
 generaldata$bee_family[generaldata$bee_genus=="Triepeolus"]<-"Apidae"
 generaldata$bee_family[generaldata$bee_genus=="Ceratina"]<-"Apidae"
@@ -166,14 +164,11 @@ generaldata$bee_family[generaldata$bee_genus=="Hylaeus"]<-"Colletidae"
 generaldata$bee_family[generaldata$bee_genus=="Dufouria"]<-"Halictidae"
 generaldata$bee_family[generaldata$bee_genus=="Coelioxys"]<-"Megachilidae"
 
-
 # remove other bugs
 generaldata<-generaldata[-which(generaldata$bee_genus == "Anacrabro"),]
-
-#I think all bees have families now
-generaldata[is.na(generaldata$bee_family),]
-table(generaldata$bee_family)
-
+#check to see that all remaining records have a family
+beeswithoutfamily <- dplyr::filter(generaldata, is.na(bee_family))
+table(droplevels(beeswithoutfamily$bee_genus))
 
 # Calculate bee proboscis length and body size
 Out <- ITconverter(IT = generaldata$IT_mm, family = generaldata$bee_family)

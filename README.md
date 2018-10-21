@@ -12,26 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 # RareBeePaper_2018
 Updated RareBeePaper Repo.
 
-# TO DO in MAY
+#scripts not currently working and put into archive
 
-1) Get a better sense of range sizes
-	a) some species not listed 
-	b) I think synonyms aren’t really working (M. bimaculata vs. bimaculatus)
-	c) need to decide on what to include in range size. Right now, I used Tina’s. But that has something like 2400 species across US. I kept it to those found in our study (species found in allbees and cig datasets). Then I took quartiles from that group.
- 
-2) Eliminating some data csv files
-	a) allbees_MG.csv and specimens_MG.csv are after uploading M.Genung’s data. Maybe be some issues but ultimately remove _MG (and have only one file)
-	b) specimens_designated_r and bees_designated_r these are with range additions. Once ranges are finalized keep correct file without “_r’
-	c) ranges.csv in data/fromR is likely wrong.
+'differences between null models.R'
 
-3) These are the final files for analysis so noting issues separately
-	a) cig_analysis_medianrare.csv - older file that categorizes groups by combined median rarity; ranges are not here. Also, there are really very few species/abundance in most groups so I don’t think this will be useful
-	b) cig_lecticity is good
-	c) cig_analysis_quarts has been updated with ranges quartiles. 
-
-4) Code
-	a) getData/designate_range.R uses Tina’s range area estimates (see above). Pulls specimens and adds range quartiles. Creates specimens_designated_r.csv for cig_aggregate.
-	b) getData/getRange.R is from Tina/Nacho but has a number of bugs 
 	
 ##Workflow
 1. *getRare.R* pulls SQL  produces **allbee.csv**, **traits.csv**  and **specimens.csv**
