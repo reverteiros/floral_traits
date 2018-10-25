@@ -1,4 +1,6 @@
-
+# this script generates simulated visits for each bee species based on the flower visit frequencies at all site rounds at which the focal bee was detected. 
+# it produces a bunch of plots for the differences between bee tongue length and flower corolla for the observed and simulated data.
+# to do: look at mean vs. SD difference in simulated data. 
 source("scripts/traits.R")
 
 library(ggplot2)

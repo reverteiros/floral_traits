@@ -205,9 +205,9 @@ datareal <- summarize(group1, abundance=n(), IT = mean(IT_mm),tongue=mean(tongue
 datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
 
 #### How many bee species are in the dataset?
-sum(table(datameasures$abundance.x)) # 130
+sum(table(datameasures$abundance.x)) # 132
 ### How many species do we have IT data?
-sum(table(datameasures$IT)) # 123
+sum(table(datameasures$IT)) # 125
 
 # write.csv(generaldata, "data/bees_and_traits.csv", row.names=F)
 
