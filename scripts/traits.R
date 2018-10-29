@@ -32,10 +32,26 @@ newbeedata$ITlength_mm <- as.numeric(as.character(newbeedata$ITlength_mm))
 
 traits <- dplyr::bind_rows(traits, newbeedata)
 
+traits$bee <- as.character(traits$bee)
+traits$bee[which(traits$bee=="Coelioxis_alternata")]<-"Coelioxys_alternata"
+traits$bee[which(traits$bee=="Coelioxis_octodentata")]<-"Coelioxys_octodentata"
+traits$bee[which(traits$bee=="Coelioxis_obtusiventris")]<-"Coelioxys_obtusiventris"
+traits$bee[which(traits$bee=="Coelioxis_sayi")]<-"Coelioxys_sayi"
+traits$bee[which(traits$bee=="Holpitis_spoliata")]<-"Hoplitis_spoliata"
+traits$bee[which(traits$bee=="Holpitis_producta")]<-"Hoplitis_producta"
+traits$bee[which(traits$bee=="Lasioglossum_coerulum")]<-"Lasioglossum_coeruleum"
+traits$bee[which(traits$bee=="Lasioglossum_cressonni")]<-"Lasioglossum_cressonii"
+traits$bee[which(traits$bee=="Lasioglossum_nigroviride")]<-"Lasioglossum_nigroviridae"
+traits$bee[which(traits$bee=="Melissodes_tridonis")]<-"Melissodes_trinodis"
+traits$bee[which(traits$bee=="Melissodes_trinodus")]<-"Melissodes_trinodis"
+traits$bee[which(traits$bee=="Megachile_xylocopioides")]<-"Megachile_xylocopoides"
+
+
+
 ## Create a table grouping per bee
  
 ## Calculate mean IT per each previous group
-nITperbee <- group_by(traits, bee) %>% summarize(IT_mm=mean(ITlength_mm),n=n())
+nITperbee <- group_by(traits, bee) %>% summarize(IT_mm=mean(ITlength_mm))
 
 
 ######### Read male bee dataset
@@ -69,19 +85,34 @@ male<-read.csv("data/2016_male_bee_dataset.csv")
 # 
 # sum(table(maleIT$measured)) #147
 
+
+
+
+########### change bee names that are wrong
+male$bee <- as.character(male$bee)
+male$bee[which(male$bee=="Stelis_louisae")]<-"Stelis_louisiae"
+male$bee[which(male$bee=="Lasioglossum_birkmanni")]<-"Lasioglossum_birkmannii"
+male$bee[which(male$bee=="Coelioxys_octodentatus")]<-"Coelioxys_octodentata"
+male$bee[which(male$bee=="Coelioxys_alternatus")]<-"Coelioxys_alternata"
+
+
+
+
 ## database of traits. separate by bee
 nITperbee3 <- group_by(traits, bee) %>% summarize(measured=n())
 
 ## database of michael separate by bee
 group2 <- group_by(male, bee)
 michaeldata <- summarize(group2, abundance=n())
+
+
+
 maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 
 #### How many species are in the dataset?
-sum(table(maleIT$abundance)) # 165
+sum(table(maleIT$abundance)) # 160
 ### How many species do we have IT data?
-sum(table(maleIT$measured))  # 148
-
+sum(table(maleIT$measured))  # 146
 
 
 ############# Read new floral traits database
@@ -103,12 +134,14 @@ names(flowerstotal) <- c("plant_gs","depth","width")
 
 male$plant_gs <- paste(male$plant_genus,male$plant_species,sep="_")
 
+male$plant_gs[which(male$plant_gs=="Eutrochium maculatum_")]<-"Eutrochium_maculatum"
+
 group <- group_by(male, plant_gs)
 michaeldata <- summarize(group, abundance=n())
 michaelflowers <- michaeldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 
 #### How many species are in the dataset?
-sum(table(michaelflowers$abundance)) # 111
+sum(table(michaelflowers$abundance)) # 112
 ### How many species do we have floral traits data?
 sum(table(michaelflowers$depth))  # 54
 
@@ -185,34 +218,24 @@ generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 #drop some yucky columns
 # generaldata<-generaldata %>% select %>% rename("plant_gs"="genus_species")
 
-## time variables
+# ## time variables
+# 
+# generaldata$boutstart<- as.POSIXct(strptime(generaldata$boutstart, format="%Y-%m-%d %H:%M:%OS"))
+# generaldata$boutend= as.POSIXct(strptime(generaldata$boutend, format="%Y-%m-%d %H:%M:%OS"))
+# 
+# generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutstart, boutend), na.rm=T))
 
-generaldata$boutstart<- as.POSIXct(strptime(generaldata$boutstart, format="%Y-%m-%d %H:%M:%OS"))
-generaldata$boutend= as.POSIXct(strptime(generaldata$boutend, format="%Y-%m-%d %H:%M:%OS"))
+## drop unused plots, all male bees, doubtful interactions, interactions without data in tongue or depth
 
-generaldata<-generaldata %>% group_by_all() %>% summarize(midbout=mean(c(boutstart, boutend), na.rm=T))
+generaldata <- droplevels(dplyr::filter(generaldata, bee_sex != "M" & site!="Featherbed"& site!="D&R Greenway" & keep!="D" & !is.na(sampling_round) & !is.na(depth)&!is.na(tongue_length.tongue)))
 
-## drop unused plots, all male bees, and doubtful interactions
-
-generaldata <- droplevels(dplyr::filter(generaldata, bee_sex != "M" & site!="Featherbed"& site!="D&R Greenway" & keep!="D" & !is.na(sampling_round)))
-
-
-
-### we want to know, from the plant species studied, the number of bee species and their number of It measurements
-generaldata <- droplevels(dplyr::filter(generaldata, !is.na(depth)))
+# New variables
+generaldata$difference <- generaldata$tongue_length.tongue-generaldata$depth
+# Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
+generaldata<-generaldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
+generaldata<-generaldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
 
 
-## database of traits. separate by bee
-group1 <- group_by(generaldata, bee)
-datareal <- summarize(group1, abundance=n(), IT = mean(IT_mm),tongue=mean(tongue_length.tongue))
-
-## database of michael separate by bee
-datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
-
-#### How many bee species are in the dataset?
-sum(table(datameasures$abundance.x)) # 130
-### How many species do we have IT data?
-sum(table(datameasures$IT)) # 123
-
-# write.csv(generaldata, "data/bees_and_traits.csv", row.names=F)
-
+## Assume differences of 0 for small bees that can crawl in (in a different variable, no problem with the data)
+generaldata <- generaldata%>% 
+  mutate(newdifference=if_else(beewider== "true", difference, 0))

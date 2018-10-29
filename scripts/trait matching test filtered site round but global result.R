@@ -5,30 +5,18 @@ library(ggplot2)
 library(purrr)
 
 
-dataglobal <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
-dataglobal$difference <- dataglobal$tongue_length.tongue-dataglobal$depth
-
-# Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
-dataglobal<-dataglobal %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72)) %>% mutate(beewider=if_else(IT_improved>width, "true", "false")) 
-
-
-######## Choose one of the following options: 
-## Assume differences of 0 for small bees that can crawl in
-dataglobal <- dataglobal%>% 
-  mutate(newdifference=if_else(beewider== "true", difference, 0))
-
-## Eliminate small bees that can crawl in
-dataglobal <- dataglobal %>% 
+## Choose at the beginning if we want to remove small bees that can crawl in
+generaldata <- generaldata %>% 
   dplyr::filter(., beewider== "true")
-
-
-################ Baldpate - Round 1#############################################################
 
 ## set number of iterations
 iterations <- 999
 
+
+################ Baldpate - Round 1#############################################################
+
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -70,7 +58,7 @@ datamatrixtable11 <- dplyr::mutate(datamatrix, site="Baldpate",round="1")
 ############################## Baldpate - Round 2##################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -112,7 +100,7 @@ datamatrixtable12 <- dplyr::mutate(datamatrix, site="Baldpate",round="2")
 ################ Baldpate - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Baldpate")
 
 
 ### create objects at the species level, with abundance, and mean traits 
@@ -155,7 +143,7 @@ datamatrixtable13 <- dplyr::mutate(datamatrix, site="Baldpate",round="3")
 ################ Baldpate - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -197,7 +185,7 @@ datamatrixtable14 <- dplyr::mutate(datamatrix, site="Baldpate",round="4")
 ################ Baldpate - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -239,7 +227,7 @@ datamatrixtable15 <- dplyr::mutate(datamatrix, site="Baldpate",round="5")
 ################ Cold Soil - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -281,7 +269,7 @@ datamatrixtable21 <- dplyr::mutate(datamatrix, site="Cold Soil",round="1")
 ################ Cold Soil - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -323,7 +311,7 @@ datamatrixtable22 <- dplyr::mutate(datamatrix, site="Cold Soil",round="2")
 ################ Cold Soil - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -365,7 +353,7 @@ datamatrixtable23 <- dplyr::mutate(datamatrix, site="Cold Soil",round="3")
 ################ Cold Soil - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -407,7 +395,7 @@ datamatrixtable24 <- dplyr::mutate(datamatrix, site="Cold Soil",round="4")
 ################ Cold Soil - Round ################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -449,7 +437,7 @@ datamatrixtable25 <- dplyr::mutate(datamatrix, site="Cold Soil",round="5")
 ################ Fox Hill - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -491,7 +479,7 @@ datamatrixtable31 <- dplyr::mutate(datamatrix, site="Fox Hill",round="1")
 ################ Fox Hill - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -533,7 +521,7 @@ datamatrixtable32 <- dplyr::mutate(datamatrix, site="Fox Hill",round="2")
 ################ Fox Hill - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -575,7 +563,7 @@ datamatrixtable33 <- dplyr::mutate(datamatrix, site="Fox Hill",round="3")
 ################ Fox Hill - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -617,7 +605,7 @@ datamatrixtable34 <- dplyr::mutate(datamatrix, site="Fox Hill",round="4")
 ################ Fox Hill - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -659,7 +647,7 @@ datamatrixtable35 <- dplyr::mutate(datamatrix, site="Fox Hill",round="5")
 ################ IAS - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -701,7 +689,7 @@ datamatrixtable41 <- dplyr::mutate(datamatrix, site="IAS",round="1")
 ################ IAS - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -743,7 +731,7 @@ datamatrixtable42 <- dplyr::mutate(datamatrix, site="IAS",round="2")
 ################ IAS - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -785,7 +773,7 @@ datamatrixtable43 <- dplyr::mutate(datamatrix, site="IAS",round="3")
 ################ IAS - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -827,7 +815,7 @@ datamatrixtable44 <- dplyr::mutate(datamatrix, site="IAS",round="4")
 ################ IAS - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -869,7 +857,7 @@ datamatrixtable45 <- dplyr::mutate(datamatrix, site="IAS",round="5")
 ################ Lord Stirling - Round 1#############################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -911,7 +899,7 @@ datamatrixtable51 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="1")
 ################ Lord Stirling - Round 2#############################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -953,7 +941,7 @@ datamatrixtable52 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="2")
 ################ Lord Stirling - Round 3#######################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -995,7 +983,7 @@ datamatrixtable53 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="3")
 ################ Lord Stirling - Round 4#######################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -1038,7 +1026,7 @@ datamatrixtable54 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="4")
 ################ Lord Stirling - Round 5##########################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -1080,7 +1068,7 @@ datamatrixtable55 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="5")
 ################ URWA - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -1122,7 +1110,7 @@ datamatrixtable61 <- dplyr::mutate(datamatrix, site="URWA",round="1")
 ################ URWA - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -1164,7 +1152,7 @@ datamatrixtable62 <- dplyr::mutate(datamatrix, site="URWA",round="2")
 ################ URWA - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
@@ -1206,7 +1194,7 @@ datamatrixtable63 <- dplyr::mutate(datamatrix, site="URWA",round="3")
 ################ URWA - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
@@ -1248,7 +1236,7 @@ datamatrixtable64 <- dplyr::mutate(datamatrix, site="URWA",round="4")
 ################ URWA - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="URWA")
 
 ### create objects at the species level with abundance, and mean traits 
 databees<-alldata %>%
@@ -1315,8 +1303,9 @@ for(i in 1:iterations){
 }
 
 #Graphs to test if observed values are different from random
-hist(means[1:iterations],main="Mean difference (tongue length minus flower depth, mm)",xlab="",ylab="")# run both lines together or does not work
+hist(means[1:iterations],main="Mean difference (tongue length minus flower depth, mm)",xlab="",ylab="")
 abline(v=means[iterations+1])
+# run both lines together or doesn't work
 hist(sds[1:iterations],xlim=c(5,7),main=" SD difference (tongue length minus flower depth, mm)",xlab="",ylab="")
 abline(v=sds[iterations+1])
 ## mean is in the random distribution, but observed sd is very different than random sds.
@@ -1360,7 +1349,7 @@ datameans <- dplyr::left_join(meanpersp,observed,"bee")
 datameans$tongue <- NULL
 
 # Generate a matrix with each bee one time, with tongue length of each
-databeesall<-dataglobal %>%
+databeesall<-generaldata %>%
   group_by(bee) %>%
   summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 

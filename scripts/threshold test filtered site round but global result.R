@@ -5,36 +5,23 @@ library(ggplot2)
 library(purrr)
 
 
-dataglobal <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
-dataglobal$difference <- dataglobal$depth-dataglobal$tongue_length.tongue
-
-# Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
-dataglobal<-dataglobal %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72)) %>% mutate(beewider=if_else(IT_improved>width, "true", "false")) 
-
-
-######## Choose one of the following options: 
-## Assume differences of 0 for small bees that can crawl in
-dataglobal <- dataglobal%>% 
-  mutate(newdifference=if_else(beewider== "true", difference, 0))
-
-## Eliminate small bees that can crawl in
-dataglobal <- dataglobal %>% 
+## Choose at the beginning if we want to remove small bees that can crawl in
+generaldata <- generaldata %>% 
   dplyr::filter(., beewider== "true")
-
-
-################ Baldpate - Round 1#############################################################
 
 ## set number of iterations
 iterations <- 999
 
+
+################ Baldpate - Round 1#############################################################
+
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -71,13 +58,12 @@ datamatrixtable11 <- dplyr::mutate(datamatrix, site="Baldpate",round="1")
 ############################## Baldpate - Round 2##################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -114,14 +100,13 @@ datamatrixtable12 <- dplyr::mutate(datamatrix, site="Baldpate",round="2")
 ################ Baldpate - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Baldpate")
 
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -158,13 +143,12 @@ datamatrixtable13 <- dplyr::mutate(datamatrix, site="Baldpate",round="3")
 ################ Baldpate - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -201,13 +185,12 @@ datamatrixtable14 <- dplyr::mutate(datamatrix, site="Baldpate",round="4")
 ################ Baldpate - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Baldpate")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Baldpate")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -244,13 +227,12 @@ datamatrixtable15 <- dplyr::mutate(datamatrix, site="Baldpate",round="5")
 ################ Cold Soil - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -287,13 +269,12 @@ datamatrixtable21 <- dplyr::mutate(datamatrix, site="Cold Soil",round="1")
 ################ Cold Soil - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -330,13 +311,12 @@ datamatrixtable22 <- dplyr::mutate(datamatrix, site="Cold Soil",round="2")
 ################ Cold Soil - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -373,13 +353,12 @@ datamatrixtable23 <- dplyr::mutate(datamatrix, site="Cold Soil",round="3")
 ################ Cold Soil - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -416,13 +395,12 @@ datamatrixtable24 <- dplyr::mutate(datamatrix, site="Cold Soil",round="4")
 ################ Cold Soil - Round ################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Cold Soil")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Cold Soil")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -459,13 +437,12 @@ datamatrixtable25 <- dplyr::mutate(datamatrix, site="Cold Soil",round="5")
 ################ Fox Hill - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -502,13 +479,12 @@ datamatrixtable31 <- dplyr::mutate(datamatrix, site="Fox Hill",round="1")
 ################ Fox Hill - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -545,13 +521,12 @@ datamatrixtable32 <- dplyr::mutate(datamatrix, site="Fox Hill",round="2")
 ################ Fox Hill - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -588,13 +563,12 @@ datamatrixtable33 <- dplyr::mutate(datamatrix, site="Fox Hill",round="3")
 ################ Fox Hill - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -631,13 +605,12 @@ datamatrixtable34 <- dplyr::mutate(datamatrix, site="Fox Hill",round="4")
 ################ Fox Hill - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Fox Hill")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Fox Hill")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -674,13 +647,12 @@ datamatrixtable35 <- dplyr::mutate(datamatrix, site="Fox Hill",round="5")
 ################ IAS - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -717,13 +689,12 @@ datamatrixtable41 <- dplyr::mutate(datamatrix, site="IAS",round="1")
 ################ IAS - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -760,13 +731,12 @@ datamatrixtable42 <- dplyr::mutate(datamatrix, site="IAS",round="2")
 ################ IAS - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -803,13 +773,12 @@ datamatrixtable43 <- dplyr::mutate(datamatrix, site="IAS",round="3")
 ################ IAS - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -846,13 +815,12 @@ datamatrixtable44 <- dplyr::mutate(datamatrix, site="IAS",round="4")
 ################ IAS - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="IAS")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="IAS")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -889,13 +857,12 @@ datamatrixtable45 <- dplyr::mutate(datamatrix, site="IAS",round="5")
 ################ Lord Stirling - Round 1#############################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -932,13 +899,12 @@ datamatrixtable51 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="1")
 ################ Lord Stirling - Round 2#############################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -975,13 +941,12 @@ datamatrixtable52 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="2")
 ################ Lord Stirling - Round 3#######################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1018,13 +983,12 @@ datamatrixtable53 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="3")
 ################ Lord Stirling - Round 4#######################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1062,13 +1026,12 @@ datamatrixtable54 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="4")
 ################ Lord Stirling - Round 5##########################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="Lord Stirling")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Lord Stirling")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1105,13 +1068,12 @@ datamatrixtable55 <- dplyr::mutate(datamatrix, site="Lord Stirling",round="5")
 ################ URWA - Round 1################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==1&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1148,13 +1110,12 @@ datamatrixtable61 <- dplyr::mutate(datamatrix, site="URWA",round="1")
 ################ URWA - Round 2################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==2&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1191,13 +1152,12 @@ datamatrixtable62 <- dplyr::mutate(datamatrix, site="URWA",round="2")
 ################ URWA - Round 3################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==3&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1234,13 +1194,12 @@ datamatrixtable63 <- dplyr::mutate(datamatrix, site="URWA",round="3")
 ################ URWA - Round 4################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==4&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="URWA")
 
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1277,13 +1236,12 @@ datamatrixtable64 <- dplyr::mutate(datamatrix, site="URWA",round="4")
 ################ URWA - Round 5################################################################
 
 # read and manipulate data
-alldata <- dplyr::filter(dataglobal,  sampling_round==5&site=="URWA")
+alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="URWA")
 
 ### create objects at the species level with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
-  dplyr::filter(., abundance > 3)
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1338,17 +1296,18 @@ datamatrixtable$quantile25 <- apply(datamatrixtable[,2:1000],1,quantile,probs=c(
 datamatrixtable$tongue <- NULL
 
 # Generate a matrix with each bee one time, with tongue length of each
-databeesall<-dataglobal %>%
+databeesall<-generaldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
+  filter(abundance > 4)
 
 # Include tongue length to dataframe
-datamatrixtable <- dplyr::left_join(datamatrixtable,databeesall,"bee")
+datamatrixtable <- dplyr::right_join(datamatrixtable,databeesall,"bee")
 
 # Plot proportion of times that flower are longer than tongues, black arrows are error bars from null models and red dots are observed values
 datamatrixtable %>%
   ggplot(aes(x=tongue))+
-  geom_point(aes(y=mean)) +
+  # geom_point(aes(y=mean)) +
   geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
   geom_point(aes(y=difference),col="red") +
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
@@ -1357,9 +1316,31 @@ datamatrixtable %>%
 # Plot proportion of times that flower are longer than tongues, black arrows are error bars from null models and red dots are observed values. In this case we consider the small bees that can crawl in a difference of 0, so flowers are not longer than tongues
 datamatrixtable %>%
   ggplot(aes(x=tongue))+
-  geom_point(aes(y=mean)) +
+  # geom_point(aes(y=mean)) +
   geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
   geom_point(aes(y=newdifference),col="red") +
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
   theme_classic() 
+
+
+# ## If we want to separet it at the site-round level
+# 
+# datamatrixtable %>%
+#   ggplot(aes(x=tongue))+
+#   geom_point(aes(y=mean)) +
+#   geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
+#   geom_point(aes(y=difference),col="red") +
+#   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+#   theme_classic() +
+#   facet_wrap(~round+site, ncol=6)
+# 
+# datamatrixtable %>%
+#   ggplot(aes(x=tongue))+
+#   geom_point(aes(y=mean)) +
+#   geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
+#   geom_point(aes(y=newdifference),col="red") +
+#   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+#   theme_classic() +
+#   facet_wrap(~round+site, ncol=6)
+
 
