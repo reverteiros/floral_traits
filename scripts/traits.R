@@ -112,7 +112,12 @@ maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 #### How many species are in the dataset?
 sum(table(maleIT$abundance)) # 160
 ### How many species do we have IT data?
+<<<<<<< HEAD
 sum(table(maleIT$measured))  # 146
+=======
+sum(table(maleIT$measured))  # 143
+
+>>>>>>> 0997079596f1271c31d9f5315c5afd2a313b17fd
 
 
 ############# Read new floral traits database
@@ -188,8 +193,6 @@ generaldata <- generaldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 
 
 ## check family data
-beeswithoutfamily <- dplyr::filter(generaldata, is.na(bee_family))
-table(droplevels(beeswithoutfamily$bee_genus))
 
 generaldata$bee_family[generaldata$bee_genus=="Triepeolus"]<-"Apidae"
 generaldata$bee_family[generaldata$bee_genus=="Ceratina"]<-"Apidae"
@@ -199,14 +202,11 @@ generaldata$bee_family[generaldata$bee_genus=="Hylaeus"]<-"Colletidae"
 generaldata$bee_family[generaldata$bee_genus=="Dufouria"]<-"Halictidae"
 generaldata$bee_family[generaldata$bee_genus=="Coelioxys"]<-"Megachilidae"
 
-
 # remove other bugs
 generaldata<-generaldata[-which(generaldata$bee_genus == "Anacrabro"),]
-
-#I think all bees have families now
-generaldata[is.na(generaldata$bee_family),]
-table(generaldata$bee_family)
-
+#check to see that all remaining records have a family
+beeswithoutfamily <- dplyr::filter(generaldata, is.na(bee_family))
+table(droplevels(beeswithoutfamily$bee_genus))
 
 # Calculate bee proboscis length and body size
 Out <- ITconverter(IT = generaldata$IT_mm, family = generaldata$bee_family)
@@ -229,11 +229,21 @@ generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 
 generaldata <- droplevels(dplyr::filter(generaldata, bee_sex != "M" & site!="Featherbed"& site!="D&R Greenway" & keep!="D" & !is.na(sampling_round) & !is.na(depth)&!is.na(tongue_length.tongue)))
 
+<<<<<<< HEAD
 # New variables
 generaldata$difference <- generaldata$tongue_length.tongue-generaldata$depth
 # Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
 generaldata<-generaldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 generaldata<-generaldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
+=======
+## database of michael separate by bee
+datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
+
+#### How many bee species are in the dataset?
+sum(table(datameasures$abundance.x)) # 132
+### How many species do we have IT data?
+sum(table(datameasures$IT)) # 125
+>>>>>>> 0997079596f1271c31d9f5315c5afd2a313b17fd
 
 
 ## Assume differences of 0 for small bees that can crawl in (in a different variable, no problem with the data)
