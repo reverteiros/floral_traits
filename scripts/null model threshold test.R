@@ -1,7 +1,5 @@
 
-
 library(purrr)
-
 
 ## set number of iterations
 iterations <- 999
@@ -30,7 +28,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -72,7 +70,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -99,7 +97,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Baldpate")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -115,7 +113,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -157,7 +155,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -183,7 +181,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Baldpate")
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -199,7 +197,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -241,7 +239,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -283,7 +281,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -309,7 +307,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="Cold Soil")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -325,7 +323,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -351,7 +349,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Cold Soil")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -367,7 +365,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -409,7 +407,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -451,7 +449,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -493,7 +491,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -535,7 +533,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -561,7 +559,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="Fox Hill")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -577,7 +575,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -619,7 +617,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -645,7 +643,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="IAS")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -661,7 +659,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -687,7 +685,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="IAS")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -703,7 +701,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -745,7 +743,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -771,7 +769,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==4&site=="IAS")
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -787,7 +785,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -813,7 +811,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="IAS")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -829,7 +827,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -871,7 +869,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -897,7 +895,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="Lord Stirling")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -913,7 +911,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -955,7 +953,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -997,7 +995,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -1024,7 +1022,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="Lord Stirling")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1040,7 +1038,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -1066,7 +1064,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==1&site=="URWA")
 ### create objects at the species level, with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1082,7 +1080,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -1108,7 +1106,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==2&site=="URWA")
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1124,7 +1122,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -1150,7 +1148,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==3&site=="URWA")
 ### create objects at the species level, with abundance, and mean traits
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue),abundance=n())  
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1166,7 +1164,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -1208,7 +1206,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
@@ -1234,7 +1232,7 @@ alldata <- dplyr::filter(generaldata,  sampling_round==5&site=="URWA")
 ### create objects at the species level with abundance, and mean traits 
 databees<-alldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n())
+  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
 
 dataflowers<-alldata %>%
   group_by(plant_gs) %>%
@@ -1250,7 +1248,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
+    b <- a - databees$tongue[x]
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)

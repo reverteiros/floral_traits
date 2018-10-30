@@ -33,19 +33,9 @@ newbeedata$ITlength_mm <- as.numeric(as.character(newbeedata$ITlength_mm))
 traits <- dplyr::bind_rows(traits, newbeedata)
 
 traits$bee <- as.character(traits$bee)
-traits$bee[which(traits$bee=="Coelioxis_alternata")]<-"Coelioxys_alternata"
-traits$bee[which(traits$bee=="Coelioxis_octodentata")]<-"Coelioxys_octodentata"
-traits$bee[which(traits$bee=="Coelioxis_obtusiventris")]<-"Coelioxys_obtusiventris"
-traits$bee[which(traits$bee=="Coelioxis_sayi")]<-"Coelioxys_sayi"
-traits$bee[which(traits$bee=="Holpitis_spoliata")]<-"Hoplitis_spoliata"
-traits$bee[which(traits$bee=="Holpitis_producta")]<-"Hoplitis_producta"
 traits$bee[which(traits$bee=="Lasioglossum_coerulum")]<-"Lasioglossum_coeruleum"
-traits$bee[which(traits$bee=="Lasioglossum_cressonni")]<-"Lasioglossum_cressonii"
 traits$bee[which(traits$bee=="Lasioglossum_nigroviride")]<-"Lasioglossum_nigroviridae"
 traits$bee[which(traits$bee=="Melissodes_tridonis")]<-"Melissodes_trinodis"
-traits$bee[which(traits$bee=="Melissodes_trinodus")]<-"Melissodes_trinodis"
-traits$bee[which(traits$bee=="Megachile_xylocopioides")]<-"Megachile_xylocopoides"
-
 
 
 ## Create a table grouping per bee
@@ -173,6 +163,43 @@ sum(table(michaelflowers$depth))  # 60
 #   ggplot(aes(x=ITlength_mm, as.numeric(head_width)))+
 #   geom_point(aes(color=genus))+
 #   theme_classic()
+# 
+# 
+# ### Bombus
+# bumblebees <- traits %>%
+#   filter(genus =="Bombus")
+# 
+# linealmodelbombus <- lm(bumblebees$head_width~bumblebees$ITlength_mm)
+# summary(linealmodelbombus)
+# 
+# bumblebees %>%
+#   ggplot(aes(x=head_width, as.numeric(ITlength_mm)))+
+#   geom_point()+
+#   theme_classic()
+# 
+# ### Xylocopas
+# xylocopa <- traits %>%
+#   filter(genus =="Xylocopa")
+# 
+# linealmodelxylocopa <- lm(otherbees$ITlength_mm~otherbees$head_width)
+# summary(linealmodelxylocopa)
+# 
+# xylocopa %>%
+#   ggplot(aes(x=ITlength_mm, as.numeric(head_width)))+
+#   geom_point()+
+#   theme_classic()
+# 
+# ### Other bees
+# otherbees <- traits %>%
+#   filter(.,genus !="Bombus" & genus!="Xylocopa")
+# 
+# linealmodelotherbees <- lm(otherbees$head_width~otherbees$ITlength_mm)
+# summary(linealmodelotherbees)
+# 
+# otherbees %>%
+#   ggplot(aes(x=as.numeric(head_width), ITlength_mm))+
+#   geom_point(aes(color=genus))+
+#   theme_classic()
 
 
 ################ create a final dataset for graphs
@@ -228,7 +255,8 @@ generaldata <- droplevels(dplyr::filter(generaldata, bee_sex != "M" & site!="Fea
 # New variables
 generaldata$difference <- generaldata$tongue_length.tongue-generaldata$depth
 # Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
-generaldata<-generaldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
+generaldata<-generaldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm*1.29))
+generaldata<-generaldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"), IT_mm*0.78, IT_mm))
 generaldata<-generaldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
 
 ## database of michael separate by bee
