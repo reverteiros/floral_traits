@@ -112,12 +112,7 @@ maleIT <- michaeldata %>% left_join(nITperbee3, by=(c("bee")))
 #### How many species are in the dataset?
 sum(table(maleIT$abundance)) # 160
 ### How many species do we have IT data?
-<<<<<<< HEAD
-sum(table(maleIT$measured))  # 146
-=======
-sum(table(maleIT$measured))  # 143
-
->>>>>>> 0997079596f1271c31d9f5315c5afd2a313b17fd
+sum(table(maleIT$measured))  # 147
 
 
 ############# Read new floral traits database
@@ -148,7 +143,7 @@ michaelflowers <- michaeldata %>% left_join(flowerstotal, by=(c("plant_gs")))
 #### How many species are in the dataset?
 sum(table(michaelflowers$abundance)) # 112
 ### How many species do we have floral traits data?
-sum(table(michaelflowers$depth))  # 54
+sum(table(michaelflowers$depth))  # 60
 
 
 # # Which species we lack data, and how many visits do they have
@@ -229,21 +224,21 @@ generaldata$tongue_length.tongue <- Out$tongue_length.tongue
 
 generaldata <- droplevels(dplyr::filter(generaldata, bee_sex != "M" & site!="Featherbed"& site!="D&R Greenway" & keep!="D" & !is.na(sampling_round) & !is.na(depth)&!is.na(tongue_length.tongue)))
 
-<<<<<<< HEAD
+
 # New variables
 generaldata$difference <- generaldata$tongue_length.tongue-generaldata$depth
 # Modify bee IT with the estimate of the regression between head width and bee IT. Regressions apart for Bombus and Xylocopa, since they show different trends
 generaldata<-generaldata %>% mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm/0.72))
 generaldata<-generaldata %>% mutate(beewider=if_else(IT_improved>width, "true", "false"))
-=======
+
 ## database of michael separate by bee
-datameasures <- datareal %>% left_join(maleIT, by=(c("bee")))
+datameasures <-  generaldata %>%
+  group_by(bee) %>% 
+  summarize(abundance=n())
 
 #### How many bee species are in the dataset?
-sum(table(datameasures$abundance.x)) # 132
-### How many species do we have IT data?
-sum(table(datameasures$IT)) # 125
->>>>>>> 0997079596f1271c31d9f5315c5afd2a313b17fd
+sum(table(datameasures$abundance)) # 128
+
 
 
 ## Assume differences of 0 for small bees that can crawl in (in a different variable, no problem with the data)
