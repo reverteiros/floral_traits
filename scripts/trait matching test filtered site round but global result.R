@@ -44,7 +44,7 @@ for(i in 1:iterations){
 hist(means[1:iterations],main="Mean difference (tongue length minus flower depth, mm)",xlab="",ylab="")
 abline(v=means[iterations+1])
 # run both lines together or doesn't work
-hist(sds[1:iterations],xlim=c(5,7),main=" SD difference (tongue length minus flower depth, mm)",xlab="",ylab="")
+hist(sds[1:iterations],xlim=c(4,7),main=" SD difference (tongue length minus flower depth, mm)",xlab="",ylab="")
 abline(v=sds[iterations+1])
 ## mean is in the random distribution, but observed sd is very different than random sds.
 ## observed sd is way smaller than random, indicating some trait matching.
@@ -174,8 +174,13 @@ ggplot(datamatrixmeans, aes(y=zmean, x=tongue)) +
   theme_bw(base_size=16) + 
   labs(y="Z score mean",x="Bee tongue length (mm)") +
   theme_classic() +
+  geom_smooth(method=lm)+
   geom_hline(yintercept = -1.96)+
   geom_hline(yintercept = 1.96)
+
+
+a <- lm(log(datamatrixmeans$zmean)~log(datamatrixmeans$tongue))
+summary(a)
 
 datamatrixmeans$zmeannewdif <- (datamatrixmeans$mean_newdif_obs - meanpersp$mean) / meanpersp$sd
 
@@ -185,7 +190,11 @@ ggplot(datamatrixmeans, aes(y=zmeannewdif, x=tongue)) +
   labs(y="Z score mean",x="Bee tongue length (mm)") +
   theme_classic() +
   geom_hline(yintercept = -1.96)+
+  geom_smooth(method=lm)+
   geom_hline(yintercept = 1.96)
+
+a <- lm(log(datamatrixmeans$zmeannewdif)~log(datamatrixmeans$tongue))
+summary(a)
 
 ### same for SD
 datamatrixsd$zsd <- (datamatrixsd$sd_obs - sdpersp$mean) / sdpersp$sd
@@ -195,8 +204,12 @@ ggplot(datamatrixsd, aes(y=zsd, x=tongue)) +
   theme_bw(base_size=16) + 
   labs(y="Z score sd",x="Bee tongue length (mm)") +
   theme_classic() +
+  geom_smooth(method=lm)+
   geom_hline(yintercept = -1.96)+
   geom_hline(yintercept = 1.96)
+
+a <- lm(log(datamatrixsd$zsd)~log(datamatrixsd$tongue))
+summary(a)
 
 datamatrixsd$zsdnewdif <- (datamatrixsd$sd_newdif_obs - sdpersp$mean) / sdpersp$sd
 
@@ -205,16 +218,32 @@ ggplot(datamatrixsd, aes(y=zsdnewdif, x=tongue)) +
   theme_bw(base_size=16) + 
   labs(y="Z score sd",x="Bee tongue length (mm)") +
   theme_classic() +
+  geom_smooth(method=lm)+
   geom_hline(yintercept = -1.96)+
   geom_hline(yintercept = 1.96)
 
-
+a <- lm(log(datamatrixsd$zsdnewdif)~log(datamatrixsd$tongue))
+summary(a)
 
 
 
 #### Plot mean difference vs SD per each bee species 
-observed %>% mutate(absdif=abs(mean_obs)) %>% ggplot(aes(x=absdif, y=sd_obs)) + 
+observed %>% mutate(absdif=abs(mean_obs)) %>% ggplot(aes(x=abs(mean_obs), y=sd_obs)) + 
   geom_jitter(height=0.1) + 
   theme_classic()+
   geom_smooth(method=lm)+
   labs(y="Mean difference (tongue length minus flower depth, mm)", x="SD difference (mm)")
+
+a <- lm(abs(observed$mean_obs)~(observed$sd_obs))
+summary(a)
+
+
+observed %>% mutate(absdif=abs(mean_newdif_obs)) %>% ggplot(aes(x=abs(mean_newdif_obs), y=sd_newdif_obs)) + 
+  geom_jitter(height=0.1) + 
+  theme_classic()+
+  geom_smooth(method=lm)+
+  labs(y="Mean difference (tongue length minus flower depth, mm)", x="SD difference (mm)")
+
+a <- lm(abs(observed$mean_newdif_obs)~(observed$sd_newdif_obs))
+summary(a)
+

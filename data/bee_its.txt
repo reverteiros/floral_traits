@@ -206,7 +206,7 @@ Lasioglossum_atwoodi	MR17403	0.993673124
 Lasioglossum_atwoodi	MR28415	1.154473674
 Lasioglossum_atwoodi	MR30524	1.126726913
 Lasioglossum_atwoodi	MR30535	1.208569249
-Lasioglossum_birkmannii	MR29562	1.123453451
+Lasioglossum_birkmanni	MR29562	1.123453451
 Lasioglossum_bruneri	MR16290	1.441076666
 Lasioglossum_bruneri	MR16344	1.382888753
 Lasioglossum_bruneri	MR18055	1.362477816
@@ -445,5 +445,5 @@ Sphecodes_heraclei	MR22792	1.41983476
 Sphecodes_heraclei	MR25110	1.425448185
 Sphecodes_heraclei	MR27167	1.236383114
 Stelis_lateralis	MR25874	1.369399434
-Stelis_louisiae	MR14323	1.819917022
+Stelis_louisae	MR14323	1.819917022
 Triepeolus_sp_101	MR21203	1.709000657
