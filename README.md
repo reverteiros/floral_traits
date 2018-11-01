@@ -24,13 +24,10 @@ Repository for data and scripts for the tongue and flower MS Roswell, Reverte-Sa
 ### from here on this is all from the other repository and needs to be copied for ours
 
 ##Workflow
-1. pulls SQL  produces **allbee.csv**, **traits.csv**  and **specimens.csv**
-2. *designate_Rare.R* designates rarity for CIG species produces **bees_designated_all.csv** and **bees_designated_cig.csv**
-3. *cig_aggregate.R* tabulates abundance and richness for each quartile for each site/treatment. produces **cig_for.analysis.csv**
+1. *traits.R* combines and cleans data for all analyses
+2. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue length and corolla depth.
+3. *
 
-This is an update of a new Rare Bee Paper as I wanted to start over. Will notify collaborators soon and delete ES_ms1 repo by March 22, 2018
-
-1. Data are pulled from Winfree Lab databases to get rarity information (all but CIG data) 
 
 ### Data Files Produced
  data file | Folder     | Description  | Origin Code |
@@ -51,7 +48,7 @@ lecticity.csv | data/other  | species by lecticity. Partly from database, partly
 
 
 
-Also, used in getRare.R to delineate location.
+.
 
 ### Code
 File name  |Folder     |  Description   | Output
