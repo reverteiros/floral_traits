@@ -12,9 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 # floral_traits
 Repository for data and scripts for the tongue and flower MS Roswell, Reverte-Saiz, et al. 
 
-#scripts not currently working and put into archive
+#scripts in archive *not working italicized*, others not tested
 
-'differences between null models.R'
+CV_simulation.R
+*differences between null models.R*
+*NOT WORKING null model site-round.R*
+quantile regression.R
 
 #scripts in use for MS or exploration
 *`null model trait matching.R`* generates histograms of difference between tongue and flower depth on a per-visit basis, comparing permutation null to observed by superimposing
