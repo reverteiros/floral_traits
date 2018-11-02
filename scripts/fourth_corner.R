@@ -67,7 +67,11 @@ summary(built)
 summary(builtbi)
 summary(m3)
 summary(noround)
+
+summary(builta)
 summary(nosp)
+
+summary(builtc)
 summary(nosr)
 # anova(nosp, nosr)
 #confused why these have different datasets/ R says can't compare. 
