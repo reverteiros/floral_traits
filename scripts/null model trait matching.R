@@ -6,7 +6,7 @@ source("scripts/traits.R")
 #consider making something parallel here because this takes a really long time to run
 
 ## set number of iterations
-iterations <- 999
+iterations <- 9
 dat<-generaldata %>% mutate(sr=paste(sampling_round, site))
 out<-vector("list", length(unique(dat$sr)))
             
@@ -25,11 +25,11 @@ out<-parLapply(cl, 1:length(unique(dat$sr)), function(y){
 ### create objects at the species level, with abundance, and mean traits 
 databees<-sub %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) 
+  summarize(tongue=mean(tongue_length.tongue), IT=mean(IT_improved),abundance=n()) 
 
 dataflowers<-sub %>%
   group_by(plant_gs) %>%
-  summarize(depth=mean(depth),abundance=n())
+  summarize(depth=mean(depth), width=mean(width),abundance=n())
 
 filtered <- dplyr::inner_join(sub,databees, by = "bee")
 filtered <- filtered[order(filtered$bee),] 
@@ -38,24 +38,26 @@ filtered <- filtered[order(filtered$bee),]
 datamatrix <- matrix(ncol = iterations,nrow = sum(databees$abundance))
 datamatrix <- as.data.frame(datamatrix)
 
-for(i in 1:iterations){
+datamatrix<-map_dfr(lapply(1:iterations,function(z){
   species <- lapply(1:length(databees$bee),function(x){
-    a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- databees$tongue[x]- a
-    return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
-    print(a)
+    a <- dataflowers[sample(1:length(dataflowers$depth), databees$abundance[x], replace = T, prob = dataflowers$abundance),]
+    b <- databees$tongue[x]- a$depth
+    c<-(databees$IT[x]-a$width)>0
+    tozero<-b*as.numeric(c)
+    tona<-ifelse(b<0, ifelse(c, b, NA),b)
+    return(data.frame(raw=b, remove=tona, zero=tozero,tongue=rep(databees$tongue[x],length(b)), bee=rep(databees$bee[x], length(b))))
   })
   k <- map_dfr(species,rbind)
-  datamatrix[,i] <- (k$b)
-}
+  return(k)
+}), rbind)
 
-datamatrix$tongue <- (k$tongue)
-
-# Add variables to dataset
-k <- dplyr::left_join(k,databees,"tongue")
-datamatrix$bee <- k$bee
-datamatrix$difference <- filtered$difference
-datamatrix$newdifference <- filtered$newdifference
+# datamatrix$tongue <- (k$tongue)
+# 
+# # Add variables to dataset
+# k <- dplyr::left_join(k,databees,"tongue")
+# datamatrix$bee <- k$bee
+# datamatrix$difference <- filtered$difference
+# datamatrix$newdifference <- filtered$newdifference
 
 return(dplyr::mutate(datamatrix, sr=unique(dat$sr)[y]))
 })
