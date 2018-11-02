@@ -70,6 +70,7 @@ c<-datamatrixtable2 %>%
   scale_x_log10()+
   theme_classic() 
 
+pdf(file="figures/Threshold.pdf", 8,3,pointsize = 2 )
 plot_grid(a,b,c, ncol=3, labels="auto")
-
+dev.off()
 
