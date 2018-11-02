@@ -7,6 +7,9 @@ library(cowplot)
 source("scripts/traits.R")
 
 #generate null
+###################
+### WARNING######
+# this may not run as-is on any machine AND at 999 iterations takes a very long time. 
 source("scripts/null model trait matching.R")
 
 ## Now we have the null model distributions per each interaction with the flowers that each individual bee can face at the site-round that was present, it's time to work with the data. 
