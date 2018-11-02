@@ -5,7 +5,7 @@ source("scripts/traits.R")
 
 
 ## set number of iterations
-iterations <- 99
+iterations <- 999
 dat<-generaldata %>% mutate(sr=paste(sampling_round, site))
 out<-vector("list", length(unique(dat$sr)))
             
