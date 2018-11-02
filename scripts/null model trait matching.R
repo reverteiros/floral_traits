@@ -6,7 +6,8 @@ source("scripts/traits.R")
 
 ## set number of iterations
 iterations <- 999
-dat<-generaldata %>% mutate(sr=paste(sampling_round, site))
+boot_prop<-0.9
+dat<-generaldata %>% filter(sample(1:nrow(generaldata), floor(boot_prop*nrow(generaldata)))) %>% mutate(sr=paste(sampling_round, site))
 out<-vector("list", length(unique(dat$sr)))
             
 # read and manipulate data
