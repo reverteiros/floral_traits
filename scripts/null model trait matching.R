@@ -5,7 +5,7 @@ source("scripts/traits.R")
 
 
 ## set number of iterations
-iterations <- 9
+iterations <- 99
 dat<-generaldata %>% mutate(sr=paste(sampling_round, site))
 out<-vector("list", length(unique(dat$sr)))
             
@@ -44,7 +44,8 @@ datamatrix<-map_dfr(lapply(1:iterations,function(z){
     c<-(databees$IT[x]-a$width)>0
     tozero<-b*as.numeric(c)
     tona<-ifelse(b<0, ifelse(c, b, NA),b)
-    return(data.frame(raw_t_minuts_d=b, remove=tona, zero=tozero,tongue=rep(databees$tongue[x],length(b)), bee=rep(databees$bee[x], length(b))))
+    return(data.frame(raw_t_minuts_d=b, remove=tona, zero=tozero,
+                      tongue=rep(databees$tongue[x],length(b)), bee=rep(databees$bee[x], length(b)), iter=rep(z, length(b))))
   })
   k <- map_dfr(species,rbind)
   return(k)
