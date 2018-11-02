@@ -31,6 +31,8 @@ m2<-glm.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+site*sampling_rou
 
 #This is a negative binomial model with zero inflation. No idea what that really means BUT
 built<-glmmTMB(y~scale(diff)*as.factor(forbidden)+scale(plantab)+scale(beeab)+(1|site)+(1|bee)+(1|plant_gs)+(1|sampling_round),ziformula=~1,family="nbinom2",data=XYZ)
+builta<-glmmTMB(y~scale(diff)*as.factor(forbidden)+scale(plantab)+scale(beeab)+(1|site)+(1|sampling_round),ziformula=~1,family="nbinom2",data=XYZ)
+builtc<-glmmTMB(y~scale(diff)*as.factor(forbidden)+scale(plantab)+scale(beeab)+(1|bee)+(1|plant_gs),ziformula=~1,family="nbinom2",data=XYZ)
 #this has one of the better distributions of residuals
 
 #This model has fewer weird assumptions but only predicts presence. It is therefore dissatisfying. 
@@ -40,6 +42,11 @@ builtbi<-glmer(bi~scale(diff)*as.factor(forbidden)+scale(plantab)+scale(beeab)+(
 nosp<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|site)+(1|sampling_round),data=XYZ)
 noround<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|site)+(1|bee)+(1|plant_gs),data=XYZ)
 nosr<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|bee)+(1|plant_gs),data=XYZ)
+
+################################
+##### HERE ####################
+################################
+load("data/fourthcornermods.rda")
 
 #use a variable to say which model to look at below, include check assumptions and see fit
 a<-nosr
@@ -58,7 +65,12 @@ summary(built)
 summary(builtbi)
 summary(m3)
 summary(noround)
-
-anova(nosp, m3, noround, nosr)
+summary(nosp)
+summary(nosr)
+# anova(nosp, nosr)
+#confused why these have different datasets/ R says can't compare. 
 
 #takehome: trait matching ain't worth much! Also, NONE of these models predicts anywhere near the observed variance, which must rely on something like extremely strong preferences unrelated to tongue-corolla.
+#wait, the model without site and round looks very different!
+
+save(built, builta, builtc, builtbi, m3, noround, nosp, nosr, file="data/fourthcornermods.rda")
