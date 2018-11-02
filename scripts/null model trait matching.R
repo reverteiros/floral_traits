@@ -3,9 +3,10 @@
 library(tidyverse)
 source("scripts/traits.R")
 
+#consider making something parallel here because this takes a really long time to run
 
 ## set number of iterations
-iterations <- 9
+iterations <- 999
 dat<-generaldata %>% mutate(sr=paste(sampling_round, site))
 out<-vector("list", length(unique(dat$sr)))
             

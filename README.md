@@ -32,6 +32,7 @@ quantile regression.R
 2. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue length and corolla depth.
 3. *null model trait matching.R* generates a null model that permutes individual bees within site-round and computes trait matching
 4. *trait matching test filtered site round.R* uses null model to generate all of Sara's plots. #### need to spend more time with this now!
+5. *fourth_corner.R* fits various GLM(M)s to test whether tongue-depth^2 and is.forbidden predict interaction occurence and frequency. #### currently no outputs from this file!
 
 
 ### Data Files Produced

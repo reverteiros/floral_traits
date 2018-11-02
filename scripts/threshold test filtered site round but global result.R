@@ -1,22 +1,27 @@
-
+#This is the script for generating plots for observed and expected proportion of interactions with forbidden flowers
 source("scripts/traits.R")
 
 library(ggplot2)
 library(purrr)
 
-
+#This was done incorrectly, I think
+# Removing small bees is not something we want to do before generating the null model, 
+#it's a filter we would put on afterwards to both null and observed, I think. Hmm. This is tricky. 
+## Definitely doesn't seem exactly right to remove some interactions from null but not others. 
 ## Choose at the beginning if we want to remove small bees that can crawl in
-generaldata <- generaldata %>% 
-  dplyr::filter(., beewider== "true")
+# generaldata <- generaldata %>% 
+#   dplyr::filter(., beewider== "true")
+# 
+# 
+# generaldata$difference <- generaldata$depth-generaldata$tongue_length.tongue
+# 
+# generaldata <- generaldata%>% 
+#   mutate(newdifference=if_else(beewider== "true", difference, 0))
+# 
 
-
-generaldata$difference <- generaldata$depth-generaldata$tongue_length.tongue
-
-generaldata <- generaldata%>% 
-  mutate(newdifference=if_else(beewider== "true", difference, 0))
-
-
-source("scripts/null model threshold test.R")
+#I think the null models are the same. How about switch to 'null model trait matching.R'?
+# source("scripts/null model threshold test.R")
+source("scripts/null model trait matching.R")
 
 ## Now we have the null model distributions per each interaction with the flowers that each individual bee can face at the site-round that was present, it's time to work with the data. 
 
@@ -25,7 +30,8 @@ datamatrixtable <- datatotal %>%
   group_by(bee) %>%
   summarize_all(function(x){(mean(x>0))})
 
-# Mean, SD and quantiles of the null models
+# Mean, SD and quantiles of the null models 
+#this needs to be more flexible to match # iterations!
 datamatrixtable$mean <- apply(datamatrixtable[,2:(iterations+1)],1,FUN=mean)
 datamatrixtable$sd <- apply(datamatrixtable[,2:(iterations+1)],1,FUN=sd)
 datamatrixtable$quantile975 <- apply(datamatrixtable[,2:1000],1,quantile,probs=c(.975))
