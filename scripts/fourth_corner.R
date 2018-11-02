@@ -20,6 +20,8 @@ XYZ$bi<-XYZ$y>0
 #histogram of distribution of frequencies. 
 # XYZ %>% ggplot(aes(y))+geom_histogram()
 
+#Skip model fitting for now
+{
 #this is a simple poisson model with observation level random effect. it totally overfits the OLRE
 m1<-glmer(y~scale(diff)+(1|bee)+(1|plant_gs)+(1|olre), family="poisson", data=XYZ)
 
@@ -42,14 +44,14 @@ builtbi<-glmer(bi~scale(diff)*as.factor(forbidden)+scale(plantab)+scale(beeab)+(
 nosp<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|site)+(1|sampling_round),data=XYZ)
 noround<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|site)+(1|bee)+(1|plant_gs),data=XYZ)
 nosr<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|bee)+(1|plant_gs),data=XYZ)
-
+}
 ################################
 ##### HERE ####################
 ################################
 load("data/fourthcornermods.rda")
 
 #use a variable to say which model to look at below, include check assumptions and see fit
-a<-nosr
+a<-builtc
 
 #use DHARMa to generate simulated residuals for things like QQ plot
 srs<-simulateResiduals(a)
