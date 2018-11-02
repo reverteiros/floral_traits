@@ -25,7 +25,7 @@ source("scripts/null model trait matching.R")
 
 ## Now we have the null model distributions per each interaction with the flowers that each individual bee can face at the site-round that was present, it's time to work with the data. 
 
-# Ask for the proportion of cells in each iteration in the null model and for each bee species in which the difference between flower and tongue favours the flower (is positive)
+# Ask for the proportion of cells in each iteration in the null model and for each bee species in which flower - tongue >0 (this way 0 or negative means flower was accessible)
 datamatrixtable <- datatotal %>%
   group_by(bee) %>%
   summarize_all(function(x){(mean(x>0))})
@@ -47,10 +47,10 @@ databeesall<-generaldata %>%
   filter(abundance > 4)
 
 # Include tongue length to dataframe
-datamatrixtable <- dplyr::right_join(datamatrixtable,databeesall,"bee")
+datamatrixtable2 <- dplyr::right_join(datamatrixtable,databeesall,by="bee")
 
 # Plot proportion of times that flower are longer than tongues, black arrows are error bars from null models and red dots are observed values
-datamatrixtable %>%
+datamatrixtable2 %>%
   ggplot(aes(x=tongue))+
   # geom_point(aes(y=mean)) +
   geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
@@ -58,14 +58,16 @@ datamatrixtable %>%
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
   theme_classic() 
 
-# Plot proportion of times that flower are longer than tongues, black arrows are error bars from null models and red dots are observed values. In this case we consider the small bees that can crawl in a difference of 0, so flowers are not longer than tongues
-datamatrixtable %>%
-  ggplot(aes(x=tongue))+
-  # geom_point(aes(y=mean)) +
-  geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
-  geom_point(aes(y=newdifference),col="red") +
-  labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
-  theme_classic() 
+#Pretty sure this is wrong and has to happen in the null model, not here
+# # Plot proportion of times that flower are longer than tongues, black arrows are error bars from null models and red dots are observed values. In this case we consider the small bees that can crawl in a difference of 0, so flowers are not longer than tongues
+# datamatrixtable2 %>%
+#   ggplot(aes(x=tongue))+
+#   # geom_point(aes(y=mean)) +
+#   geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
+#   #um, i think we need to impute new-difference values, which I don't see how that's happening here!
+#   geom_point(aes(y=newdifference),col="red") +
+#   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+#   theme_classic() 
 
 
 # ## If we want to separet it at the site-round level
