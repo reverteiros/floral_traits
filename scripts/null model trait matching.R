@@ -3,7 +3,6 @@
 library(tidyverse)
 source("scripts/traits.R")
 
-#consider making something parallel here because this takes a really long time to run
 
 ## set number of iterations
 iterations <- 9
@@ -45,7 +44,7 @@ datamatrix<-map_dfr(lapply(1:iterations,function(z){
     c<-(databees$IT[x]-a$width)>0
     tozero<-b*as.numeric(c)
     tona<-ifelse(b<0, ifelse(c, b, NA),b)
-    return(data.frame(raw=b, remove=tona, zero=tozero,tongue=rep(databees$tongue[x],length(b)), bee=rep(databees$bee[x], length(b))))
+    return(data.frame(raw_t_minuts_d=b, remove=tona, zero=tozero,tongue=rep(databees$tongue[x],length(b)), bee=rep(databees$bee[x], length(b))))
   })
   k <- map_dfr(species,rbind)
   return(k)
