@@ -31,8 +31,9 @@ quantile regression.R
 1. *traits.R* combines and cleans data for all analyses
 2. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue length and corolla depth.
 3. *null model trait matching.R* generates a null model that permutes individual bees within site-round and computes trait matching
-4. *trait matching test filtered site round.R* uses null model to generate all of Sara's plots. #### need to spend more time with this now!
+4. *threshold test filtered site round but global result.R* takes null model values and generates figures for proportion of forbidden links
 5. *fourth_corner.R* fits various GLM(M)s to test whether tongue-depth^2 and is.forbidden predict interaction occurence and frequency. #### currently no outputs from this file!
+6. *trait matching test filtered site round.R* uses null model to generate all of Sara's plots. #### need to spend more time with this now!
 
 
 ### Data Files Produced
@@ -60,7 +61,7 @@ lecticity.csv | data/other  | species by lecticity. Partly from database, partly
 File name  |Folder     |  Description   | Output
 -----------|---------------|----------------------------- |------|
 traits.R    | scripts |  assembles interactions and trait data| ##### SHOULD MAKE AN OUTPUT INSTEAD OF CALLING EACH TIME?
-`trait matching test filtered site round`  | main |  passwords for Cariveau and Winfree lab DB |
-designate_rare.R |code/getData |  takes traits and allbees (from all database),  assigns rarity and merges with CIG dataset | bees_designated_cig.csv, bees_designated_all.csv, specimens_designated.csv
+`trait matching test filtered site round.R`  | scripts |   |
+`threshhold test filtered site round.R`|code/getData |  takes traits and allbees (from all database),  assigns rarity and merges with CIG dataset | bees_designated_cig.csv, bees_designated_all.csv, specimens_designated.csv
 cig_aggregate | code/getData | aggregates cig data based on quartiles, median rarity and lecticity| cig_analysis_medianrare.csv, cig_analysis_quarts.csv, cig_analysis_lecticity.csv
 range_estimates.R | getData | gets range maps from AMNH database from Nacho/Tina | ranges.csv
