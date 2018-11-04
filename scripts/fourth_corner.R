@@ -27,6 +27,8 @@ m1<-glmer(y~scale(diff)+(1|bee)+(1|plant_gs)+(1|olre), family="poisson", data=XY
 
 #this is a negative binomial with pretty much all the predictors (many random)
 m3<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|site)+(1|bee)+(1|plant_gs)+(1|sampling_round),data=XYZ)
+#add random slopes
+m4<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|site)+(scale(diff)|bee)+(scale(diff)|plant_gs)+(1|sampling_round),data=XYZ)
 
 #this model officially stinks, but I think it's basically the Brown et al. model
 m2<-glm.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+site*sampling_round,data=XYZ)
@@ -51,7 +53,7 @@ nosr<-glmer.nb(y~scale(diff)*forbidden+scale(plantab)+scale(beeab)+(1|bee)+(1|pl
 load("data/fourthcornermods.rda")
 
 #use a variable to say which model to look at below, include check assumptions and see fit
-a<-builtc
+a<-m4
 
 #use DHARMa to generate simulated residuals for things like QQ plot
 srs<-simulateResiduals(a)

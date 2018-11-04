@@ -24,10 +24,11 @@ upr<-function(x){quantile(x, .975, na.rm=T)}
 lwr<-function(x){quantile(x, .025, na.rm=T)}
 av<-function(x){mean(x, na.rm=T)}
 std<-function(x){sd(x, na.rm=T)}
+logit<-function(x){log(x/(1-x))}
 bysp<-datamatrixtable %>% group_by(bee, tongue) %>% summarize_all(funs(av, std, upr, lwr))
 
 # Generate a matrix with each bee one time, with tongue length of each
-obs<-generaldata %>%
+obs<-dat %>%
   mutate(big=(IT_improved-width)>0, zeroed=ifelse(difference<0, difference*big, difference),deleted=ifelse(difference<0, ifelse(big, difference, NA), difference))  %>% 
   group_by(bee) %>%
   summarize(raw_mismatch=mean(difference<0), zeroed=mean(zeroed<0), deleted=mean(deleted<0, na.rm=T), abundance=n()) %>%
@@ -43,9 +44,12 @@ a<-datamatrixtable2 %>%
   ggplot(aes(x=tongue))+
   geom_errorbar(aes(ymin=raw_t_minuts_d_lwr, ymax=raw_t_minuts_d_upr), colour="black") +
   geom_point(aes(y=raw_t_minuts_d_av),col="black") +
+  # geom_smooth(aes(y=raw_mismatch),method="lm",col="red") +
+  # geom_smooth(aes(y=raw_t_minuts_d_av),method="lm",col="black") +
   geom_point(aes(y=raw_mismatch),col="red") +
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
   scale_x_log10()+
+  scale_y_continuous(trans="logit", breaks=c(0,0.05,0.1,0.25,0.5,0.75,0.9,0.95,1))+
   theme_classic() 
 
 #where crawl-in bee interactions get a floor of 0
@@ -55,22 +59,34 @@ b<-datamatrixtable2 %>%
   geom_errorbar(aes(ymin=zero_lwr, ymax=zero_upr), colour="black") +
   geom_point(aes(y=zero_av),col="black") +
   geom_point(aes(y=zeroed),col="red") +
+  # geom_smooth(aes(y=raw_mismatch),method="lm",col="red") +
+  # geom_smooth(aes(y=raw_t_minuts_d_av),method="lm",col="black") +
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
   scale_x_log10()+
+  scale_y_continuous(trans="logit", breaks=c(0,0.05,0.1,0.25,0.5,0.75,0.9,0.95,1))+
   theme_classic() 
 
-#crawlers eliminated
-c<-datamatrixtable2 %>%
-  ggplot(aes(x=tongue))+
-  # geom_point(aes(y=mean)) +
-  geom_errorbar(aes(ymin=remove_lwr, ymax=remove_upr), colour="black") +
-  geom_point(aes(y=remove_av),col="black") +
-  geom_point(aes(y=deleted),col="red") +
-  labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
-  scale_x_log10()+
-  theme_classic() 
+# #crawlers eliminated
+# c<-datamatrixtable2 %>%
+#   ggplot(aes(x=tongue))+
+#   # geom_point(aes(y=mean)) +
+#   geom_errorbar(aes(ymin=remove_lwr, ymax=remove_upr), colour="black") +
+#   geom_point(aes(y=remove_av),col="black") +
+#   geom_point(aes(y=deleted),col="red") +
+#   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+#   scale_x_log10()+
+#   theme_classic() 
 
-pdf(file="figures/Threshold.pdf", 8,3,pointsize = 2 )
-plot_grid(a,b,c, ncol=3, labels="auto")
-dev.off()
+# pdf(file="figures/Threshold.pdf", 8,3,pointsize = 2 )
+plot_grid(a,b, ncol=2, labels="auto")
+# dev.off()
 
+lapply(unique(datamatrixtable$bee), function(x){
+  d<-datamatrixtable %>% filter(bee==x) %>% 
+    ggplot(aes(x=raw_t_minuts_d))+
+    geom_histogram()+
+    theme_classic()
+  print(d)
+})
+x<-"Andrena_cressonii"
+colnames(datamatrixtable)
