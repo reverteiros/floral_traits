@@ -47,7 +47,7 @@ a<-datamatrixtable2 %>%
   # geom_smooth(aes(y=raw_mismatch),method="lm",col="red") +
   # geom_smooth(aes(y=raw_t_minuts_d_av),method="lm",col="black") +
   geom_point(aes(y=raw_mismatch),col="red") +
-  labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+  labs(y="Proportion corolla-tongue>0",x="Bee tongue length (mm)") +
   scale_x_log10()+
   scale_y_continuous(trans="logit", breaks=c(0,0.05,0.1,0.25,0.5,0.75,0.9,0.95,1))+
   theme_classic() 
@@ -61,7 +61,7 @@ b<-datamatrixtable2 %>%
   geom_point(aes(y=zeroed),col="red") +
   # geom_smooth(aes(y=raw_mismatch),method="lm",col="red") +
   # geom_smooth(aes(y=raw_t_minuts_d_av),method="lm",col="black") +
-  labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
+  labs(y="",x="Bee tongue length (mm)") +
   scale_x_log10()+
   scale_y_continuous(trans="logit", breaks=c(0,0.05,0.1,0.25,0.5,0.75,0.9,0.95,1))+
   theme_classic() 
