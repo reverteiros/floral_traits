@@ -95,6 +95,7 @@ rawsdz<-bysp %>% ggplot(aes(tongue.x, z(difference_std,difference_std_av, differ
   geom_hline(yintercept=0)+
   geom_hline(yintercept=-1.96)+
   geom_hline(yintercept=1.96)+
+  # geom_smooth(method="glm")+
   theme_classic()
 
 zerosd<-bysp %>% ggplot(aes(tongue.x)) + 
@@ -115,69 +116,44 @@ zerosdz<-bysp %>% ggplot(aes(tongue.x, z(zeroed_std,zeroed_std_av, zeroed_std_st
   theme_classic()
 
 
-
-ggplot(datamatrixmeans, aes(y=zmeannewdif, x=tongue)) + 
-  geom_point(size=1.5,color="red") +
-  theme_bw(base_size=16) + 
-  labs(y="Z score mean",x="Bee tongue length (mm)") +
-  theme_classic() +
-  geom_hline(yintercept = -1.96)+
-  geom_smooth(method=lm)+
-  geom_hline(yintercept = 1.96)
-
-a <- lm(log(datamatrixmeans$zmeannewdif)~log(datamatrixmeans$tongue))
-summary(a)
-
-### same for SD
-datamatrixsd$zsd <- (datamatrixsd$sd_obs - sdpersp$mean) / sdpersp$sd
-
-ggplot(datamatrixsd, aes(y=zsd, x=tongue)) + 
-  geom_point(size=1.5,color="red") +
-  theme_bw(base_size=16) + 
-  labs(y="Z score sd",x="Bee tongue length (mm)") +
-  theme_classic() +
-  geom_smooth(method=lm)+
-  geom_hline(yintercept = -1.96)+
-  geom_hline(yintercept = 1.96)
-
-a <- lm(log(datamatrixsd$zsd)~log(datamatrixsd$tongue))
-summary(a)
-
-datamatrixsd$zsdnewdif <- (datamatrixsd$sd_newdif_obs - sdpersp$mean) / sdpersp$sd
-
-ggplot(datamatrixsd, aes(y=zsdnewdif, x=tongue)) + 
-  geom_point(size=1.5,color="red") +
-  theme_bw(base_size=16) + 
-  labs(y="Z score sd",x="Bee tongue length (mm)") +
-  theme_classic() +
-  geom_smooth(method=lm)+
-  geom_hline(yintercept = -1.96)+
-  geom_hline(yintercept = 1.96)
-
-a <- lm(log(datamatrixsd$zsdnewdif)~log(datamatrixsd$tongue))
-summary(a)
-
-
+#look at, e.g. correlation between effect size for SD or mean (tongue-corolla) from tongue
+# a <- lm(z(difference_std,difference_std_av, difference_std_std)~log(tongue.x), data=bysp)
+# plot(a)
+# summary(a)
+# 
+# b <- lm(z(difference_av,difference_av_av, difference_av_std)~log(tongue.x), data=bysp)
+# plot(b)
+# summary(b)
 
 #### Plot mean difference vs SD per each bee species 
-observed %>% mutate(absdif=abs(mean_obs)) %>% ggplot(aes(x=abs(mean_obs), y=sd_obs)) + 
-  geom_jitter(height=0.1) + 
+k<-obs %>% group_by(bee) %>% summarize(ave=abs(av(difference)), varx=std(difference))
+  
+bysp %>% ggplot(aes(abs(difference_av_av), difference_std_av))+
+  geom_point()+
+  # geom_errorbar(aes(x=abs(difference_av_av),ymin=difference_std_lwr, ymax=difference_std_upr))+
+  # geom_errorbarh(aes(y=difference_std_av,xmin=abs(difference_av_lwr), xmax=abs(difference_av_upr)))+
+  geom_point(aes(ave, varx), data=k,color="red")+ 
+  # scale_x_continuous(limits=c(0,8))+
+  # geom_jitter(height=0.1) + 
   theme_classic()+
-  geom_smooth(method=lm)+
-  labs(y="Mean difference (tongue length minus flower depth, mm)", x="SD difference (mm)")
+  # geom_smooth(method=lm)+
+  labs(x="Mean (tongue-corolla), mm", y="sd(tongue-corolla), mm")
 
-a <- lm(abs(observed$mean_obs)~(observed$sd_obs))
-summary(a)
+c <- lm(varx~ave, data=(obs %>% group_by(bee) %>% summarize(ave=abs(av(difference)), varx=std(difference))))
+plot(c)
+summary(c)
 
+# bysp %>% ggplot()+ 
+#   # geom_jitter(height=0.1) + 
+#   geom_point()+
+#   theme_classic()+
+#   geom_smooth(method=lm)+
+#   labs(x="Mean difference (tongue length minus flower depth, mm)", y="SD difference (mm)")
 
-observed %>% mutate(absdif=abs(mean_newdif_obs)) %>% ggplot(aes(x=abs(mean_newdif_obs), y=sd_newdif_obs)) + 
-  geom_jitter(height=0.1) + 
-  theme_classic()+
-  geom_smooth(method=lm)+
-  labs(y="Mean difference (tongue length minus flower depth, mm)", x="SD difference (mm)")
+d <- lm(difference_std_av~abs(difference_av_av), data=bysp[-75,])
+plot(d)
+summary(d)
 
-a <- lm(abs(observed$mean_newdif_obs)~(observed$sd_newdif_obs))
-summary(a)
 ############### Test for trait matching with the entire network 
 ####(approach similar to Sazatornil et al 2016)
 means <- numeric(iterations+2)
