@@ -77,16 +77,14 @@ b<-datamatrixtable2 %>%
 #   scale_x_log10()+
 #   theme_classic() 
 
-# pdf(file="figures/Threshold.pdf", 8,3,pointsize = 2 )
+pdf(file="figures/Threshold_fig2.pdf", 9,4 )
 plot_grid(a,b, ncol=2, labels="auto")
-# dev.off()
+dev.off()
 
-lapply(unique(datamatrixtable$bee), function(x){
-  d<-datamatrixtable %>% filter(bee==x) %>% 
-    ggplot(aes(x=raw_t_minuts_d))+
-    geom_histogram()+
-    theme_classic()
-  print(d)
-})
-x<-"Andrena_cressonii"
-colnames(datamatrixtable)
+# lapply(unique(datamatrixtable$bee), function(x){
+#   d<-datamatrixtable %>% filter(bee==x) %>% 
+#     ggplot(aes(x=raw_t_minuts_d))+
+#     geom_histogram()+
+#     theme_classic()
+#   print(d)
+# })
