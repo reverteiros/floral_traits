@@ -65,7 +65,7 @@ bigout<-ldply(lapply(d, function(x){
   ldply(lapply(x, function(y){
     ldply(y)}))}))
 
-
+write.csv(bigout,"data/site_round_threshold.csv", row.names=F)
 # 
 # alldatasite <- alldata%>%filter(site=="Cold Soil" & sampling_round=="1")
 # flowerssite <- dataflowers%>%filter(site=="Cold Soil"& sampling_round=="1")
