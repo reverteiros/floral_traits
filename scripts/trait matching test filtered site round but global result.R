@@ -165,20 +165,11 @@ sds[iterations+2] <- sd(datatotal[,(iterations+4)])#add observed value assuming 
 
 
 #Graphs to test if observed values are different from random
-hist(means[1:iterations],main="Mean difference (tongue length minus flower depth, mm)",xlab="",ylab="")
-abline(v=means[iterations+1])
-# run both lines together or doesn't work
-hist(sds[1:iterations],xlim=c(4,7),main=" SD difference (tongue length minus flower depth, mm)",xlab="",ylab="")
-abline(v=sds[iterations+1])
-## mean is in the random distribution, but observed sd is very different than random sds.
-## observed sd is way smaller than random, indicating some trait matching.
 
-
-#Graphs to test if observed values are different from random assuming 0 difference for small bees 
-hist(means[1:iterations],xlim=c(-1,1),main="Mean difference (tongue length minus flower depth, mm)",xlab="",ylab="")
-abline(v=means[iterations+2])
-# run both lines together or doesn't work
-hist(sds[1:iterations],xlim=c(4,7),main=" SD difference (tongue length minus flower depth, mm)",xlab="",ylab="")
-abline(v=sds[iterations+2])
-
-
+comb %>% mutate(datasrc=iter<7777777) %>% ggplot(aes(difference,fill=datasrc))+ 
+  scale_fill_discrete(labels=c("observed", "null model"), name="")+
+  # geom_freqpoly(stat="density")+
+  geom_density(alpha=0.5, kernel="epanechnikov", n=60)+
+  labs(x="tongue-corolla", y="visit \"density\" (height proportional to visit frequency)")+
+  # theme(legend.title = element_blank())+
+  theme_classic()
