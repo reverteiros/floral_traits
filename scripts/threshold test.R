@@ -52,18 +52,22 @@ datamatrixtable <- datamatrix %>%
   group_by(bee) %>%
   summarize_all(function(x){(mean(x>0))})
 
-# Mean and SD of the null models
+# Mean, SD and quantiles of the null models
 datamatrixtable$mean <- apply(datamatrixtable[,2:(iterations+1)],1,FUN=mean)
 datamatrixtable$sd <- apply(datamatrixtable[,2:(iterations+1)],1,FUN=sd)
+datamatrixtable$quantile975 <- apply(datamatrixtable[,2:1000],1,quantile,probs=c(.975))
+datamatrixtable$quantile25 <- apply(datamatrixtable[,2:1000],1,quantile,probs=c(.025))
+
+# when we did summary we had a column of tongues, but it turned to ones. Remove and insert again
+datamatrixtable$tongue <- NULL
 datamatrixtable <- dplyr::left_join(datamatrixtable,databees,"bee")
 
 # Plot graph with means of proportion of flowers longer than tongues derived from null model with error bars and real data
 datamatrixtable %>%
   ggplot(aes(x=tongue))+
   geom_point(aes(y=mean)) +
-  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), colour="black", width=.1) +
+  geom_errorbar(aes(ymin=quantile25, ymax=quantile975), colour="black", width=.1) +
   geom_point(aes(y=difference),col="red") +
   labs(y="Proportion of flowers > tongues",x="Bee tongue length (mm)") +
   theme_classic()
-
 # sometimes the plot gives error, run the previous line and the plot again and is fine

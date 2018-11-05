@@ -9,38 +9,32 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# RareBeePaper_2018
-Updated RareBeePaper Repo.
+# floral_traits
+Repository for data and scripts for the tongue and flower MS Roswell, Reverte-Saiz, et al. 
 
-# TO DO in MAY
+#scripts in archive *not working italicized*, others not tested
 
-1) Get a better sense of range sizes
-	a) some species not listed 
-	b) I think synonyms aren’t really working (M. bimaculata vs. bimaculatus)
-	c) need to decide on what to include in range size. Right now, I used Tina’s. But that has something like 2400 species across US. I kept it to those found in our study (species found in allbees and cig datasets). Then I took quartiles from that group.
- 
-2) Eliminating some data csv files
-	a) allbees_MG.csv and specimens_MG.csv are after uploading M.Genung’s data. Maybe be some issues but ultimately remove _MG (and have only one file)
-	b) specimens_designated_r and bees_designated_r these are with range additions. Once ranges are finalized keep correct file without “_r’
-	c) ranges.csv in data/fromR is likely wrong.
+CV_simulation.R
+*differences between null models.R*
+*NOT WORKING null model site-round.R*
+quantile regression.R
 
-3) These are the final files for analysis so noting issues separately
-	a) cig_analysis_medianrare.csv - older file that categorizes groups by combined median rarity; ranges are not here. Also, there are really very few species/abundance in most groups so I don’t think this will be useful
-	b) cig_lecticity is good
-	c) cig_analysis_quarts has been updated with ranges quartiles. 
+#scripts in use for MS or exploration
+*`null model trait matching.R`* generates histograms of difference between tongue and flower depth on a per-visit basis, comparing permutation null to observed by superimposing
 
-4) Code
-	a) getData/designate_range.R uses Tina’s range area estimates (see above). Pulls specimens and adds range quartiles. Creates specimens_designated_r.csv for cig_aggregate.
-	b) getData/getRange.R is from Tina/Nacho but has a number of bugs 
-	
+*`trait matching test filtered site round`* hard codes each site and round, and then for each bee spp. determines which flowers it could have visited (I think). Then it uses those flowers to generate null models for the difference between tongue length and the corolla depth. 
+
+*fourth_corner.R* generates various versions of linear models that use trait matching as a predictor and interaction frequency/occurence as a response. Traits don't seem very important. 
+
+
 ##Workflow
-1. *getRare.R* pulls SQL  produces **allbee.csv**, **traits.csv**  and **specimens.csv**
-2. *designate_Rare.R* designates rarity for CIG species produces **bees_designated_all.csv** and **bees_designated_cig.csv**
-3. *cig_aggregate.R* tabulates abundance and richness for each quartile for each site/treatment. produces **cig_for.analysis.csv**
+1. *traits.R* combines and cleans data for all analyses
+2. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue length and corolla depth.
+3. *null model trait matching.R* generates a null model that permutes individual bees within site-round and computes trait matching
+4. *threshold test filtered site round but global result.R* takes null model values and generates figures for proportion of forbidden links
+5. *fourth_corner.R* fits various GLM(M)s to test whether tongue-depth^2 and is.forbidden predict interaction occurence and frequency. #### currently no outputs from this file!
+6. *trait matching test filtered site round.R* uses null model to generate all of Sara's plots. #### need to spend more time with this now!
 
-This is an update of a new Rare Bee Paper as I wanted to start over. Will notify collaborators soon and delete ES_ms1 repo by March 22, 2018
-
-1. Data are pulled from Winfree Lab databases to get rarity information (all but CIG data) 
 
 ### Data Files Produced
  data file | Folder     | Description  | Origin Code |
@@ -61,13 +55,13 @@ lecticity.csv | data/other  | species by lecticity. Partly from database, partly
 
 
 
-Also, used in getRare.R to delineate location.
+.
 
 ### Code
 File name  |Folder     |  Description   | Output
 -----------|---------------|----------------------------- |------|
-getRare.R    | code/getData |  extracts  relevant list of bees from databases. Also truncates based on phenology and location. | allbees.csv, specimens.csv, traits.csv
-psw/user source | main |  passwords for Cariveau and Winfree lab DB |
-designate_rare.R |code/getData |  takes traits and allbees (from all database),  assigns rarity and merges with CIG dataset | bees_designated_cig.csv, bees_designated_all.csv, specimens_designated.csv
+traits.R    | scripts |  assembles interactions and trait data| ##### SHOULD MAKE AN OUTPUT INSTEAD OF CALLING EACH TIME?
+`trait matching test filtered site round.R`  | scripts |   |
+`threshhold test filtered site round.R`|code/getData |  takes traits and allbees (from all database),  assigns rarity and merges with CIG dataset | bees_designated_cig.csv, bees_designated_all.csv, specimens_designated.csv
 cig_aggregate | code/getData | aggregates cig data based on quartiles, median rarity and lecticity| cig_analysis_medianrare.csv, cig_analysis_quarts.csv, cig_analysis_lecticity.csv
 range_estimates.R | getData | gets range maps from AMNH database from Nacho/Tina | ranges.csv
