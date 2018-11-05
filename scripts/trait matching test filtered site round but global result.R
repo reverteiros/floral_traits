@@ -128,7 +128,7 @@ zerosdz<-bysp %>% ggplot(aes(tongue.x, z(zeroed_std,zeroed_std_av, zeroed_std_st
 #### Plot mean difference vs SD per each bee species 
 k<-obs %>% group_by(bee) %>% summarize(ave=abs(av(difference)), varx=std(difference))
   
-bysp %>% ggplot(aes(abs(difference_av_av), difference_std_av))+
+mean_variance_scaling<-bysp %>% ggplot(aes(abs(difference_av_av), difference_std_av))+
   geom_point()+
   # geom_errorbar(aes(x=abs(difference_av_av),ymin=difference_std_lwr, ymax=difference_std_upr))+
   # geom_errorbarh(aes(y=difference_std_av,xmin=abs(difference_av_lwr), xmax=abs(difference_av_upr)))+
@@ -154,19 +154,10 @@ d <- lm(difference_std_av~abs(difference_av_av), data=bysp[-75,])
 plot(d)
 summary(d)
 
-############### Test for trait matching with the entire network 
-####(approach similar to Sazatornil et al 2016)
-means <- numeric(iterations+2)
-sds <- numeric(iterations+2)
-means[iterations+1] <- mean((datatotal[,(iterations+3)]))#add observed value
-sds[iterations+1] <- sd(datatotal[,(iterations+3)])#add observed value
-means[iterations+2] <- mean((datatotal[,(iterations+4)]))#add observed value assuming 0 difference for small bees
-sds[iterations+2] <- sd(datatotal[,(iterations+4)])#add observed value assuming 0 difference for small bees
-
 
 #Graphs to test if observed values are different from random
 
-comb %>% mutate(datasrc=iter<7777777) %>% ggplot(aes(difference,fill=datasrc))+ 
+global_hist<-comb %>% mutate(datasrc=iter<7777777) %>% ggplot(aes(difference,fill=datasrc))+ 
   scale_fill_discrete(labels=c("observed", "null model"), name="")+
   # geom_freqpoly(stat="density")+
   geom_density(alpha=0.5, kernel="epanechnikov", n=60)+
