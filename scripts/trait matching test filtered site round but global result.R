@@ -80,13 +80,21 @@ zeromeanz<-bysp %>% ggplot(aes(tongue.x, z(zeroed_av,zeroed_av_av, zeroed_av_std
   geom_hline(yintercept=1.96)+
   theme_classic()
 
-
 rawsd<-bysp %>% ggplot(aes(tongue.x)) + 
   geom_point(aes(y=difference_std_av)) +
   geom_errorbar(aes(ymin=difference_std_lwr, ymax=difference_std_upr)) +
   geom_point(aes(y=difference_std),size=1.5,color="red") +
   scale_x_log10()+
   labs(y="sd(tongue-corolla), mm",x="bee tongue length (mm)") +
+  theme_classic()
+
+rawsdz<-bysp %>% ggplot(aes(tongue.x, z(difference_std,difference_std_av, difference_std_std))) + 
+  geom_point() +
+  scale_x_log10()+
+  labs(y="z-score(tongue-corolla), mm",x="bee tongue length (mm)") +
+  geom_hline(yintercept=0)+
+  geom_hline(yintercept=-1.96)+
+  geom_hline(yintercept=1.96)+
   theme_classic()
 
 zerosd<-bysp %>% ggplot(aes(tongue.x)) + 
@@ -97,26 +105,16 @@ zerosd<-bysp %>% ggplot(aes(tongue.x)) +
   labs(y="mean(tongue-corolla), mm",x="bee tongue length (mm)") +
   theme_classic()
 
+zerosdz<-bysp %>% ggplot(aes(tongue.x, z(zeroed_std,zeroed_std_av, zeroed_std_std))) + 
+  geom_point() +
+  scale_x_log10()+
+  labs(y="z-score(tongue-corolla), mm",x="bee tongue length (mm)") +
+  geom_hline(yintercept=0)+
+  geom_hline(yintercept=-1.96)+
+  geom_hline(yintercept=1.96)+
+  theme_classic()
 
 
-
-########### OK, we see that some observed values are far away from the 2.5% and the 97.5% quantiles. Kind of looks like the sign of the difference between the observed value and the 2.5% and 97.5% quantiles depends on the tongue of the bees, in that short-tongued bees "trait match more" = the observed value tend to be above the 97.5% quantile, while long-tongued bees tend to be under the 2.5% quantile. Let's check that:
-datamatrixmeans$zmean <- (datamatrixmeans$mean_obs - meanpersp$mean) / meanpersp$sd
-
-ggplot(datamatrixmeans, aes(y=zmean, x=tongue)) + 
-  geom_point(size=1.5,color="red") +
-  theme_bw(base_size=16) + 
-  labs(y="Z score mean",x="Bee tongue length (mm)") +
-  theme_classic() +
-  geom_smooth(method=lm)+
-  geom_hline(yintercept = -1.96)+
-  geom_hline(yintercept = 1.96)
-
-
-a <- lm(log(datamatrixmeans$zmean)~log(datamatrixmeans$tongue))
-summary(a)
-
-datamatrixmeans$zmeannewdif <- (datamatrixmeans$mean_newdif_obs - meanpersp$mean) / meanpersp$sd
 
 ggplot(datamatrixmeans, aes(y=zmeannewdif, x=tongue)) + 
   geom_point(size=1.5,color="red") +
