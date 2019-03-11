@@ -5,8 +5,38 @@ library(ggplot2)
 library(ggExtra)
 
 
+require(ggplot2)
+require(reshape2)
+mtcars2 = melt(mtcars, id.vars='mpg')
+
+andrenidae <- generaldata %>%
+  filter(bee_family == "Andrenidae")
+
+hist(andrenidae$newdifference)
+
+colletidae <- generaldata %>%
+  filter(bee_family == "Colletidae")
+
+halictidae <- generaldata %>%
+  filter(bee_family == "Halictidae")
+
+apidae <- generaldata %>%
+  filter(bee_family == "Apidae")
+
+megachilidae <- generaldata %>%
+  filter(bee_family == "Megachilidae")
+
+ggplot(megachilidae) +
+  geom_jitter(aes(depth,tongue_length.tongue, alpha = 0.5,colour=bee_family)) + 
+  geom_smooth(aes(depth,tongue_length.tongue, colour=bee_family), method=lm, se=FALSE) +
+  theme_classic() +
+  labs(x="Flower depth (mm)", y="Bee tongue length (mm)")
+
+
+
+
 #### Plot tongue vs depth with histograms at margins
-g <- ggplot(generaldata, aes(y=depth, x=tongue_length.tongue)) + 
+g <- ggplot(generaldata, aes(y=depth, x=tongue_length.tongue,color=bee_family)) + 
   geom_jitter(alpha=0.1, height=0.1) + 
   theme_classic() +
   labs(y="Flower depth (mm)", x="Bee tongue length (mm)")
