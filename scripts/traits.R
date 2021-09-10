@@ -1,5 +1,7 @@
 
+# install.packages("devtools")
 require(devtools)
+# install_github("ibartomeus/BeeIT")
 library(BeeIT)
 library(tidyverse)
 
