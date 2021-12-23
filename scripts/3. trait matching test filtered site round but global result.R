@@ -2,12 +2,12 @@
 # it produces a bunch of plots for the differences between bee tongue length and flower corolla for the observed and simulated data.
 # to do: look at mean vs. SD difference in simulated data. 
 
-source("scripts/traits.R")
+source("scripts/1. Data cleaning.R")
 
 library(cowplot)
 
 #run null model
-source("scripts/null model trait matching.R")
+source("scripts/5. Original script null model.R")
 
 # Filter species that appear less than 5 times
 obs<-dat %>%

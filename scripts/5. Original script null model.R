@@ -1,7 +1,7 @@
 #generates null model that each be interacts with each flower spp. with probability~number of interactions that flower participated in at that site-round
 
 library(tidyverse)
-source("scripts/traits.R")
+source("scripts/1. Data cleaning.R")
 
 
 ## set number of iterations

@@ -5,8 +5,22 @@ library(ggplot2)
 library(purrr)
 
 # read and manipulate data
-alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue))
-alldata$difference <- alldata$depth-alldata$tongue_length.tongue
+alldata <- dplyr::filter(generaldata, !is.na(depth)&!is.na(tongue_length.tongue)) %>%
+  dplyr::filter(difference < 1.6)%>%
+  dplyr::filter(difference > -1.6)
+
+
+2831/14863 +1.6
+8251/14836 match
+3781/14836
+
+
+2796+10206+1861
+
+
+num <- c(1,2,3,4,5,6,7,8,9,10)
+table(num > 1.6)
+
 
 ### create objects at the species level, with abundance, and mean traits (subset bee species with more than 5 individuals collected to avoid species with high errors due to small size)
 databees<-alldata %>%
@@ -29,7 +43,7 @@ datamatrix <- as.data.frame(datamatrix)
 for(i in 1:iterations){
   species <- lapply(1:length(databees$bee),function(x){
     a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
-    b <- a - databees$tongue[x]
+    b <- databees$tongue[x] - a
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
   k <- map_dfr(species,rbind)
