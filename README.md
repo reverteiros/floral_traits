@@ -3,10 +3,6 @@ title: "README"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # floral_traits
 Repository for data and scripts for the tongue and flower MS Reverte-Saiz, Roswell, et al. 
 
