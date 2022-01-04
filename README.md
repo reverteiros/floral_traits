@@ -23,21 +23,21 @@ quantile regression.R
 
 ## Workflow
 1. *traits.R* combines and cleans data for all analyses
-2. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue length and corolla depth.
-3. *null model trait matching.R* generates a null model that permutes individual bees within site-round and computes trait matching
-4. *threshold test filtered site round but global result.R* takes null model values and generates figures for proportion of forbidden links
-5. *fourth_corner.R* fits various GLM(M)s to test whether tongue-depth^2 and is.forbidden predict interaction occurence and frequency. #### currently no outputs from this file!
-6. *trait matching test filtered site round.R* uses null model to generate all of Sara's plots. #### need to spend more time with this now!
+1. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue length and corolla depth.
+1. *null model trait matching.R* generates a null model that permutes individual bees within site-round and computes trait matching
+1. *threshold test filtered site round but global result.R* takes null model values and generates figures for proportion of forbidden links
+1. *fourth_corner.R* fits various GLM(M)s to test whether tongue-depth^2 and is.forbidden predict interaction occurence and frequency. #### currently no outputs from this file!
+1. *trait matching test filtered site round.R* uses null model to generate all of Sara's plots. #### need to spend more time with this now!
 
 
 ## Data Files Produced
  data file | Folder     | Description  | Origin Code |
 -----------|---------------|------------------------------------- | --------|
-
+ | | | | 
 
 ## Code
 File name  |Folder     |  Description   | Output
 -----------|---------------|----------------------------- |------|
-traits.R    | scripts |  assembles interactions and trait data| ##### SHOULD MAKE AN OUTPUT INSTEAD OF CALLING EACH TIME?
+`traits.R`  | scripts |  assembles interactions and trait data| ##### SHOULD MAKE AN OUTPUT INSTEAD OF CALLING EACH TIME?
 `trait matching test filtered site round.R`  | scripts |   |
-`threshhold test filtered site round.R`|code/getData |  takes traits and allbees (from all database),  assigns rarity and merges with CIG dataset | 
+`threshhold test filtered site round.R`|code/getData |  | 
