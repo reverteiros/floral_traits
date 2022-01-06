@@ -29,9 +29,10 @@ Traits don't seem very important.
 
 
 ## Workflow
-1. *`1 Data cleaning.R`* combines and cleans data for all analyses
-1. *plots.R*  generates MS fig 1 showing entire dataset in terms of tongue
-length and corolla depth.
+1. *`1 Data cleaning.R`* combines and cleans data for all analyses. Called by (2)
+1. *`2 trait matching test entire community.R*  No outputs, but compares
+observed differences in trait value between bee and flower to expectations under
+a naive null model
 1. *null model trait matching.R* generates a null model that permutes individual
 bees within site-round and computes trait matching
 1. *threshold test filtered site round but global result.R* takes null model
