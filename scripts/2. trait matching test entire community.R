@@ -12,31 +12,39 @@ library(grid)
 
 
 
-### create objects at the species level, with abundance, and mean traits (subset bee species with 5 individuals collected or more to avoid species with high errors due to small size)
+### create objects at the species level, with abundance, and mean traits (subset
+### bee species with 5 individuals collected or more to avoid species with high
+### errors due to small size)
 databees <- generaldata %>%
   group_by(bee) %>%
-  summarize(tongue=mean(tongue_length.tongue),abundance=n()) %>%
-  dplyr::filter(., abundance > 4)
+  summarize(tongue = mean(tongue_length.tongue), abundance = n()) %>%
+  dplyr::filter(abundance > 4)
 
 dataflowers <- generaldata %>%
   group_by(plant_gs) %>%
-  summarize(depth=mean(depth),abundance=n())
+  summarize(depth=mean(depth), abundance=n())
 
-filtered <- dplyr::inner_join(generaldata,databees, by = "bee")
+filtered <- dplyr::inner_join(generaldata, databees, by = "bee") # this and the code above could be accomplished with mutate if wanted to refactor, `arrange` is the idiomatic way to sort in tidyverse
 filtered <- filtered[order(filtered$bee),] 
 
-## Create matrix to insert null models. 999 runs of the null model, so matrix dimensions 14201*1000 (include a column for bee tongue length)
+## Create matrix to insert null models. 999 runs of the null model, so matrix
+## dimensions 14201*1000 (include a column for bee tongue length)
 iterations <- 999
-nullmodel <- matrix(ncol = (iterations),nrow = sum(databees$abundance))
+nullmodel <- matrix(ncol = (iterations), nrow = sum(databees$abundance))
 nullmodel <- as.data.frame(nullmodel)
 
+# null model 
 for(i in 1:iterations){
-  species <- lapply(1:length(databees$bee),function(x){
-    a <- sample(dataflowers$depth, databees$abundance[x], replace = T, prob = dataflowers$abundance)
+  k <- map_dfr(1:length(databees$bee),function(x){
+    a <- sample(dataflowers$depth # 1 entry per plant species
+                , size = databees$abundance[x] # abundance of bee species x
+                , replace = T
+                , prob = dataflowers$abundance #weighting for the resampling probability
+                )
     b <- databees$tongue[x] - a
     return(data.frame(b,tongue=rep(databees$tongue[x],length(b))))
   })
-  k <- map_dfr(species,rbind)
+
   nullmodel[,i] <- (k$b)
 }
 
@@ -48,7 +56,7 @@ nullmodel$tongue <- (k$tongue)
 # plot(nullmodel$tongue, nullmodel[,646])
 
 # Add variables to dataset
-k <- dplyr::left_join(k,databees,"tongue")
+k <- dplyr::left_join(k, databees, "tongue")
 nullmodel$bee <- k$bee
 nullmodel$difference <- filtered$difference
 nullmodel$plant_gs <- filtered$plant_gs
@@ -60,8 +68,8 @@ nullmodel$depth <- filtered$depth
 ####(approach similar to Sazatornil et al 2016)
 means <- numeric(iterations+1)
 sds <- numeric(iterations+1)
-means[iterations+1] <- mean(nullmodel[,(iterations+3)])#add observed value
-sds[iterations+1] <- sd(nullmodel[,(iterations+3)])#add observed value
+means[iterations+1] <- mean(nullmodel[ , (iterations + 3)])#add observed value
+sds[iterations+1] <- sd(nullmodel[ , (iterations + 3)])#add observed value
 
 # generate means and sd of each entire null network, 999 replicates
 for(i in 1:iterations){
@@ -70,15 +78,26 @@ for(i in 1:iterations){
 }
 
 #Graphs to test if observed values are different from random
-hist(means[1:iterations],main="Tongue length - flower depth, mm",xlab="",ylab="")# run both lines together or does not work
-abline(v=means[iterations+1])
-hist(sds[1:iterations],xlim=c(5,7),main=" SD Tongue length - flower depth, mm)",xlab="",ylab="")
-abline(v=sds[iterations+1])
+hist(means[1:iterations]
+     , main= "Tongue length - flower depth, mm"
+     , xlab= ""
+     , ylab= "")# run both lines together or does not work
+
+abline(v = means[iterations + 1])
+
+hist(sds[1:iterations]
+     , xlim =c(5,7)
+     , main =" SD Tongue length - flower depth, mm)"
+     , xlab = ""
+     , ylab = "")
+
+abline(v = sds[iterations + 1])
 ## mean is in the random distribution, but observed sd is very different than random sds.
-## observed sd is way smaller than random, indicating some trait matching.
+## observed sd is way smaller than random, indicating associations between
+## plants and bees, but not necessarily trait matching
 
 datagraphs <- nullmodel[298:1002] %>%
-  select(V298,difference)
+  select(V298 ,difference)
 
 ggplot(datagraphs, aes(x=V298))+
   geom_density(fill="lightblue",alpha=0.6)+
@@ -115,11 +134,18 @@ for(i in 1:78){
 meanpersp$bee <- unique(nullperbee$bee)
 
 # Quantiles of the null models
-meanpersp$quantile975 <- apply(meanpersp[,1:999],1,quantile,probs=c(.975))
-meanpersp$quantile25 <- apply(meanpersp[,1:999],1,quantile,probs=c(.025))
+meanpersp$quantile975 <- apply(meanpersp[ , 1:999]
+                               , 1
+                               , quantile
+                               , probs = c(.975))
+
+meanpersp$quantile25 <- apply(meanpersp[ , 1:999]
+                              , 1
+                              , quantile
+                              , probs=c(.025))
 
 # when we did summary we had a column of tongues, but it turned to ones. Remove and insert again
-datameans <- dplyr::left_join(meanpersp,observed,"bee")
+datameans <- dplyr::left_join(meanpersp, observed, "bee")
 
 # Plot graph with means of proportion of flowers longer than tongues derived from null model with error bars and real data
 ggplot(datameans, aes(y=mean_obs, x=tongue)) + 
@@ -127,7 +153,8 @@ ggplot(datameans, aes(y=mean_obs, x=tongue)) +
   #geom_errorbar(aes(ymin=quantile25, ymax=quantile975), position = position_dodge(0.3)) +
   theme_bw(base_size=16) + 
   #coord_flip()+
-  labs(y="Tongue length - flower depth, mm",x="Bee tongue length (mm)") +
+  labs(y= "Tongue length - flower depth, mm"
+       , x= "Bee tongue length (mm)") +
   theme_classic()
 
 ggplot(datameans, aes(y=bee, x=mean_obs)) + 
@@ -153,6 +180,7 @@ datameans <- datameans %>%
   
 
 table(datameans$group)
+
 
 
 
@@ -193,7 +221,8 @@ c <- ggplot(datameans, aes(x=group, y=tongue)) +
 ggarrange(ggarrange(a,b, ncol = 2, labels = c("A", "B")),c, ncol = 1, nrow = 2)
 
 
-
+# data exploration: is bee species abundance a silent driver of the observed
+# relationships? no
 ggplot(datameans, aes(x=group, y=abundance)) + 
   geom_beeswarm(aes(colour=group),size=3)+
   # geom_point(aes(colour=group),size=3) +
@@ -201,16 +230,22 @@ ggplot(datameans, aes(x=group, y=abundance)) +
   theme_classic()+
   theme(legend.position = "none") 
 
+# range_width is a measure of the inner 95% quantile of null model mean trait
+# differences for species. This should tend to zero as sample sizes get really
+# big (and thus the mean doesn't vary between null model runs). This is what we
+# see.
 
-ggplot(datameans, aes(x=range_width, y=abundance)) + 
+ggplot(datameans, aes(x=abundance, y=range_width)) + 
   # geom_beeswarm(aes(colour=group),size=3)+
   geom_point() +
   theme_classic()
 
-ggplot(datameans, aes(x=range_width, y=tongue)) + 
+# but what if there was also a relationship with tongue lenght?
+ggplot(datameans, aes(y=range_width, x=tongue)) + 
   # geom_beeswarm(aes(colour=group),size=3)+
   geom_point() +
   theme_classic()
+# it looks like this is just a translation of the tongue/abundance distribution
 
 ggplot(datameans, aes(x=abundance, y=tongue)) + 
   # geom_beeswarm(aes(colour=group),size=3)+
@@ -218,7 +253,8 @@ ggplot(datameans, aes(x=abundance, y=tongue)) +
   theme_classic()
 
 
-########### same with SD. I prefer not to use it because the SD is linked to sample size more than anything
+########### same with SD. I prefer not to use it because the SD is linked to
+########### sample size more than anything
 
 # sdpersp <- matrix(ncol = 999,nrow = 78)
 # sdpersp <- as.data.frame(sdpersp)

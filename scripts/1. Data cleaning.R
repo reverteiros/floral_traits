@@ -1,12 +1,13 @@
 
 # install.packages("devtools")
-require(devtools)
-# install_github("ibartomeus/BeeIT")
+# devtools::install_github("ibartomeus/BeeIT")
 library(BeeIT)
 library(tidyverse)
 
-############# Read IT database
+############# Read IT data
 traits<-read.csv("data/wlab_db_5-31-18_3-21 PM_specimen_level_traits.csv")
+# Look for more recent/ publicly available version of these data. 
+
 ## Create vector of complete bee species name pasting genus and species
 traits$bee <- paste(traits$genus, traits$species, sep = "_")
 
@@ -14,10 +15,12 @@ traits$bee <- paste(traits$genus, traits$species, sep = "_")
 traits<-traits[traits$ITlength_mm!="NULL",]
 ## Clean sex data. There are many classes
 traits<-traits[-which(traits$sex == "unknown"|traits$sex == "NULL"),]
+
 #do we want to just use workers since that is the majority of the data? 
 # I think this is the right move. 
 traits$sex[which(traits$sex=="queen"|traits$sex=="worker")]<-"female"
 traits$sex <- droplevels(traits$sex)
+
 ## Variable IT distance is still a factor. Convert to numeric
 traits$ITlength_mm <- as.numeric(as.character(traits$ITlength_mm))
 
@@ -30,11 +33,13 @@ traits$ITlength_mm <- as.numeric(as.character(traits$ITlength_mm))
 
 #### read new bee its dataset
 newbeedata<-read.table("data/bee_its.txt",header = T)
+
 newbeedata$ITlength_mm <- as.numeric(as.character(newbeedata$ITlength_mm))
 
 traits <- dplyr::bind_rows(traits, newbeedata)
 
 traits$bee <- as.character(traits$bee)
+#fix spelling mistakes. Note this is on the $bee column so "species" column will still be wrong
 traits$bee[which(traits$bee=="Lasioglossum_coerulum")]<-"Lasioglossum_coeruleum"
 traits$bee[which(traits$bee=="Lasioglossum_nigroviride")]<-"Lasioglossum_nigroviridae"
 traits$bee[which(traits$bee=="Melissodes_tridonis")]<-"Melissodes_trinodis"
@@ -43,12 +48,13 @@ traits$bee[which(traits$bee=="Melissodes_tridonis")]<-"Melissodes_trinodis"
 ## Create a table grouping per bee
  
 ## Calculate mean IT per each previous group
-nITperbee <- group_by(traits, bee) %>% summarize(IT_mm=mean(ITlength_mm))
+nITperbee <- group_by(traits, bee) %>% 
+  summarize(IT_mm=mean(ITlength_mm))
 
 
 ######### Read male bee dataset
 male<-read.csv("data/2016_male_bee_dataset.csv")
-# #### since we are not separing by sex, is this necessary???
+
 # ## Clean sex data. There are many classes
 # male<-male[-which(male$bee_sex == "Unidentified"|male$bee_sex == ""),]
 # male$bee_sex[which(male$bee_sex=="m")]<-"M"
@@ -127,9 +133,13 @@ names(floraltraits) <- c("Species","depth","width")
 flowerstotal <- dplyr::bind_rows(floraltraits, flowersmeasured)
 names(flowerstotal) <- c("plant_gs","depth","width")
 
+# check no duplicates
+length(unique(flowerstotal$plant_gs))
+length(flowerstotal$plant_gs)
+
 ## add the data to the bee dataset
 
-male$plant_gs <- paste(male$plant_genus,male$plant_species,sep="_")
+male$plant_gs <- paste(male$plant_genus, male$plant_species, sep = "_")
 
 male$plant_gs[which(male$plant_gs=="Eutrochium maculatum_")]<-"Eutrochium_maculatum"
 ############### include the extrafloral nectaries of chammaecrista fasciculata
@@ -141,7 +151,7 @@ michaelflowers <- male %>%
   left_join(flowerstotal, by=(c("plant_gs")))
 
 #### How many species are in the dataset?
-sum(table(michaelflowers$abundance)) # 112
+length(unique(michaelflowers$plant_gs)) # 112
 ### How many species do we have floral traits data?
 sum(table(michaelflowers$depth))  # 60
 
@@ -244,7 +254,7 @@ table((beeswithoutfamily$bee_genus))#if it's 0 is good
 Out <- ITconverter(IT = generaldata3$IT_mm, family = generaldata3$bee_family)
 
 generaldata3$body_mass <- Out$body_mass
-generaldata3$tongue_length.tongue <- Out$tongue_length.tongue
+generaldata3$tongue_length.tongue <- Out$tongue_length.tongue # tongue lengths all estimated?
 
 
 #drop some yucky columns
