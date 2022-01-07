@@ -12,13 +12,13 @@ library(grid)
 bees_qualitative <- generaldata %>% 
   mutate(N = 1) %>%
   group_by(bee,plant_gs) %>% 
-  summarize(tongue=mean(tongue_length.tongue),depth=mean(depth),abundance=sum(N)) 
+  summarize(tongue=mean(tongue_length.tongue),depth=mean(depth),abundance=sum(N),newdepth=mean(newdepth)) 
 
 
 
 #### Plot tongue vs depth with histograms at margins
-g <- ggplot(bees_qualitative, aes(y=tongue, x=depth)) + 
-  geom_jitter(alpha=0.5, height=0.2,aes(size = abundance)) + 
+g <- ggplot(bees_qualitative, aes(y=tongue,x=newdepth)) + 
+  geom_point(col = "red", alpha=0.5, height=0.2,aes(size = abundance)) + 
   theme_classic() +
   coord_fixed()+
   labs(x="Flower depth (mm)", y="Bee tongue length (mm)")+
@@ -27,7 +27,7 @@ g <- ggplot(bees_qualitative, aes(y=tongue, x=depth)) +
   theme(legend.position = "none") 
 
 
-ggMarginal(g, type = "histogram", fill="transparent")
+ggMarginal(g, type = "histogram", fill="red")
 
 
 ggplot(bees_qualitative, aes(y=tongue, x=depth)) + 

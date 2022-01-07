@@ -121,6 +121,10 @@ flowersmeasured <- read.table("data/flowers.txt",header = T) %>%
   group_by(Species) %>%
   summarize(depth=mean(depth),width=mean(width))
 
+generaldata3$bee_family[generaldata3$bee_genus=="Triepeolus"]<-"Apidae"
+
+
+
 ############# Read floral traits database
 floraltraits_original <- read.csv("data/floraltraits.csv")
 floraltraits <- data.frame(floraltraits_original$genus_species,floraltraits_original$depth,floraltraits_original$width)
@@ -139,6 +143,8 @@ length(flowerstotal$plant_gs)
 male$plant_gs <- paste(male$plant_genus, male$plant_species, sep = "_")
 
 male$plant_gs[which(male$plant_gs=="Eutrochium maculatum_")]<-"Eutrochium_maculatum"
+############### include the extrafloral nectaries of chammaecrista fasciculata
+male$plant_gs[which(male$plant_gs=="Chamaecrista_fasciculata_nectary")]<-"Chamaecrista_fasciculata"
 
 michaelflowers <- male %>%
   group_by(plant_gs) %>%
@@ -274,13 +280,28 @@ generaldata <- generaldata3 %>%
   mutate(IT_improved=if_else((bee_genus == "Bombus"| bee_genus == "Xylocopa"), IT_mm, IT_mm*1.29)) %>%
   mutate(IT_improved=if_else((bee_genus == "Bombus"), IT_mm*0.78, IT_mm)) %>% 
   mutate(beewider=if_else(IT_improved>width, "true", "false")) %>% 
-  mutate(newdifference=if_else(beewider== "true", difference, 0)) ## Assume differences of 0 for small bees that can crawl in (in a different variable, no problem with the data)
+  mutate(newdifference=if_else(beewider== "true", difference, 0)) %>%## Assume differences of 0 for small bees that can crawl in (in a different variable, no problem with the data) 
+  mutate(newdepth=if_else(beewider== "true", depth, 0)) 
 
 ## database of michael separate by bee
 datameasures <-  generaldata %>%
   group_by(bee) %>% 
   summarize(abundance=n(),tongue=mean(tongue_length.tongue))
 
+write.table(datameasures,"C:\\Users\\535388\\OneDrive - UMONS\\R folders\\floral_traits\\Table_bee_sp.txt")
+
 #### How many bee species are in the dataset?
 sum(table(datameasures$abundance)) # 128
 
+
+## database of michael separate by plant
+datameasuresflowers <-  generaldata %>%
+  group_by(plant_gs) %>% 
+  summarize(abundance=n(),depth=mean(depth))
+
+hist(datameasures$tongue,breaks=26)
+
+write.table(datameasuresflowers,"C:\\Users\\535388\\OneDrive - UMONS\\R folders\\floral_traits\\Table_plant_sp.txt")
+
+
+mean(generaldata$difference)
