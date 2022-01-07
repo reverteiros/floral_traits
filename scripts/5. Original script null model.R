@@ -2,13 +2,12 @@
 # probability~number of interactions that flower participated in at that
 # site-round
 
-library(tidyverse)
 library(furrr)
 source("scripts/1. Data cleaning.R")
 
 
 ## set number of iterations
-iterations <- 999
+iterations <- 99
 boot_prop <- 1
 # looks like subset the data, but maybe here to 100 percent?
 dat<-sample_n(generaldata
@@ -69,10 +68,7 @@ datatotal<-future_map_dfr(1:length(unique(dat$sr)), function(y){
   
   return(dplyr::mutate(datamatrix, sr=unique(dat$sr)[y]))
 })
-stopCluster(cl)
 
 
 
-####################### Join entire dataset##################################
 
- <- bind_rows(out)

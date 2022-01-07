@@ -19,7 +19,8 @@ traits<-traits[-which(traits$sex == "unknown"|traits$sex == "NULL"),]
 #do we want to just use workers since that is the majority of the data? 
 # I think this is the right move. 
 traits$sex[which(traits$sex=="queen"|traits$sex=="worker")]<-"female"
-traits$sex <- droplevels(traits$sex)
+# traits$sex <- droplevels(traits$sex) 
+# commented out b/c maybe a shift to or from tidyverse mean this was no longer a factor.
 
 ## Variable IT distance is still a factor. Convert to numeric
 traits$ITlength_mm <- as.numeric(as.character(traits$ITlength_mm))
