@@ -48,17 +48,17 @@ datatotal<-future_map_dfr(1:length(unique(dat$sr)), function(y){
                               , prob = dataflowers$abundance), ]
       b <- databees$tongue[x]- a$depth
       c <- (databees$IT[x] - a$width) > 0
-      tozero_even_if_long<-b*as.numeric(c) # set the difference to zero when bee can crawl in
+      # tozero_even_if_long<-b*as.numeric(c) # set the difference to zero when bee can crawl in
       tozero<-b * min(sum(as.numeric(b>0) * as.numeric(c)), 1) # set the difference to zero when bee can crawl in if tongue is short, but not if long
       tona<-ifelse(b<0 # is flower deeper than tongue
                    , ifelse(c # is bee wider than corolla
                             , b # if yes to both, then length difference
                             , NA) # if flower is too deep but bee can crawl in (weird)
                    , b) # just use observed difference when tongue is longer
-      return(data.frame(raw_t_minus_d = b 
-                        , remove = tona # i.e. remove the interactions for bees that have short tongues but narrow IT
-                        , zero = tozero # set trait difference to 0 when bee can crawl in (applies even when corolla < tongue?!?!)
-                        , short_zero = tozero_even_if_long # feel like the other way makes more sense (only set to zero for )
+      return(data.frame(difference = b 
+                        , deleted = tona # i.e. remove the interactions for bees that have short tongues but narrow IT
+                        , zeroed = tozero # set trait difference to 0 when bee can crawl in (applies even when corolla < tongue?!?!)
+                        # , short_zero = tozero_even_if_long # feel like the other way makes more sense (only set to zero for )
                         , tongue = databees$tongue[x]
                         , bee = databees$bee[x]
                         , iter = z

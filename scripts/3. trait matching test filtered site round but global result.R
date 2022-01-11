@@ -5,8 +5,6 @@
 # flower corolla for the observed and simulated data.
 # to do: look at mean vs. SD difference in simulated data. 
 
-source("scripts/1. Data cleaning.R")
-
 library(cowplot)
 
 #run null model
@@ -14,26 +12,35 @@ source("scripts/5. Original script null model.R")
 
 # Filter species that appear less than 5 times
 obs<-dat %>%
-  mutate(big=(IT_improved-width)>0, zeroed=ifelse(difference<0, difference*big, difference),deleted=ifelse(difference<0, ifelse(big, difference, NA), difference), iter=rep(7777777, length(dat$bee)))  %>% 
+  mutate(big= (IT_improved-width) > 0
+         , zeroed=ifelse(difference < 0
+                         , difference * big # this makes sense
+                         , difference)
+         , deleted=ifelse(difference < 0
+                         , ifelse(big, difference, NA)
+                         , difference)
+         , iter = 7777777)  %>% 
   group_by(bee) %>%
   # summarize(raw_mismatch=mean(difference<0), zeroed=mean(zeroed<0), deleted=mean(deleted<0, na.rm=T), abundance=n()) %>%
-  filter(length(uniqueID) > 4) %>% select(bee, iter, difference, big, zeroed, deleted)
+  filter(length(uniqueID) > 4) %>% select(bee, tongue = tongue_length.tongue, sr, iter, difference, big, zeroed, deleted)
 
 upr<-function(x){quantile(x, .975, na.rm=T)}
 lwr<-function(x){quantile(x, .025, na.rm=T)}
 av<-function(x){mean(x, na.rm=T)}
 std<-function(x){sd(x, na.rm=T)}
+
 z<-function(obs, xpctd, xvar){(obs-xpctd)/xvar}
 
 
 #combine null and observed
 # combo <- dplyr::inner_join(datatotal, obs, by = "bee")
-comb<-bind_rows(obs, datatotal %>% transmute(bee, iter, difference=raw_t_minuts_d, deleted=remove, zeroed=zero, tongue, iter, sr))
+comb<-bind_rows(obs, datatotal)
 
 
-nmod <- comb %>% select(-sr) %>% 
+nmod <- comb %>% 
+  select(-sr) %>% # not needed for summaries, this was just for the null model
   group_by(bee, tongue, iter) %>%
-  summarize_all(funs(av, std))
+  summarize_all(.funs = c(av = av, std = std))
 ## Now we have the null model distributions per each interaction with the flowers that each individual bee can face at the site-round that was present, it's time to work with the data. 
 
 
